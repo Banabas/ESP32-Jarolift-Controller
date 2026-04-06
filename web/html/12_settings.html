@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <title>ESP Async Web Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../css/pico.css" />
+    <link rel="stylesheet" type="text/css" href="../css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <script src="../js/doc.js" defer></script>
+    <script src="../js/lang.js" defer></script>
+    <script src="../js/fun.js" defer></script>
+    <script src="../js/events.js" defer></script>
+    <style></style>
+    <script>
+      function test() {
+        document.getElementById("tab12").classList.add("active");
+        localizePage("de");
+      }
+      setInterval(test, 1000);
+    </script>
+  </head>
+  <body>
+    <!-- Layout -->
+    <header
+      style="
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "></header>
+    <!-- Tab-Content -->
+    <main class="container">
+      <!--SECTION-START-->
+      <div id="tab12" class="tab-content">
+        <div class="grid" style="max-width: 1024px">
+          <div style="width: 100%">
+            <!-- WLAN -->
+            <details>
+              <summary data-i18n="wifi"></summary>
+              <div class="section-header">
+                <label for="wifi_enable" data-i18n="activate"></label>
+                <div class="switch-container">
+                  <input
+                    name="wifi_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_wifi_enable" />
+                </div>
+              </div>
+              <br />
+              <label for="wifi_hostname" data-i18n="hostname"></label>
+              <input type="text" id="cfg_wifi_hostname" name="wifi_hostname" />
+              <label for="wifi_ssid" data-i18n="ssid"></label>
+              <input type="text" id="cfg_wifi_ssid" name="wifi_ssid" />
+              <label for="wifi_password">Passwort</label>
+              <input
+                type="password"
+                id="cfg_wifi_password"
+                name="wifi_password" />
+
+              <div class="section-header">
+                <label for="man_ip_enable" data-i18n="static_ip"></label>
+                <div class="switch-container">
+                  <input
+                    name="man_ip_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="WIFI_STATIC_IP"
+                    id="cfg_wifi_static_ip" />
+                </div>
+              </div>
+              <br />
+              <div class="WIFI_STATIC_IP">
+                <label for="ip_adr" data-i18n="ip_adr"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_wifi_ipaddress"
+                  name="ip_adr" />
+                <label for="ip_subnet" data-i18n="ip_subnet"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_wifi_subnet"
+                  name="ip_subnet" />
+                <label for="ip_gateway" data-i18n="ip_gateway"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_wifi_gateway"
+                  name="ip_gateway" />
+                <label for="ip_dns" data-i18n="ip_dns"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_wifi_dns"
+                  name="ip_dns" />
+              </div>
+            </details>
+            <hr />
+            <!-- ETHERNET -->
+            <details>
+              <summary>Ethernet (W5500)</summary>
+              <div class="section-header">
+                <label for="eth_enable" data-i18n="activate"></label>
+                <div class="switch-container">
+                  <input
+                    name="eth_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_eth_enable" />
+                </div>
+              </div>
+              <br />
+              <label for="eth_hostname" data-i18n="hostname"></label>
+              <input type="text" id="cfg_eth_hostname" name="eth_hostname" />
+              <label for="eth_gpio_sck">GPIO CLK</label>
+              <input type="number" id="cfg_eth_gpio_sck" name="eth_gpio_sck" />
+              <label for="eth_gpio_mosi">GPIO MOSI</label>
+              <input
+                type="number"
+                id="cfg_eth_gpio_mosi"
+                name="eth_gpio_mosi" />
+              <label for="eth_gpio_miso">GPIO MISO</label>
+              <input
+                type="number"
+                id="cfg_eth_gpio_miso"
+                name="eth_gpio_miso" />
+              <label for="eth_gpio_cs">GPIO CS</label>
+              <input type="number" id="cfg_eth_gpio_cs" name="eth_gpio_cs" />
+              <label for="eth_gpio_irq">GPIO INT</label>
+              <input type="number" id="cfg_eth_gpio_irq" name="eth_gpio_irq" />
+              <label for="eth_gpio_rst">GPIO RST</label>
+              <input type="number" id="cfg_eth_gpio_rst" name="eth_gpio_rst" />
+              <div class="section-header">
+                <label for="man_ip_enable" data-i18n="static_ip"></label>
+                <div class="switch-container">
+                  <input
+                    name="man_ip_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="ETH_STATIC_IP"
+                    id="cfg_eth_static_ip" />
+                </div>
+              </div>
+              <br />
+              <div class="ETH_STATIC_IP">
+                <label for="ip_adr" data-i18n="ip_adr"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_eth_ipaddress"
+                  name="ip_adr" />
+                <label for="ip_subnet" data-i18n="ip_subnet"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_eth_subnet"
+                  name="ip_subnet" />
+                <label for="ip_gateway" data-i18n="ip_gateway"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_eth_gateway"
+                  name="ip_gateway" />
+                <label for="ip_dns" data-i18n="ip_dns"></label>
+                <input
+                  type="url"
+                  data-type="ip"
+                  oninput="validateIP(this)"
+                  id="cfg_eth_dns"
+                  name="ip_dns" />
+              </div>
+            </details>
+            <hr />
+            <!-- Authentication -->
+            <details>
+              <summary data-i18n="access"></summary>
+              <div class="section-header">
+                <label for="auth_enable" data-i18n="activate"></label>
+                <div class="switch-container">
+                  <input
+                    name="auth_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="OPT_AUTH"
+                    id="cfg_auth_enable" />
+                </div>
+              </div>
+              <br />
+              <label for="auth_user" data-i18n="user"></label>
+              <input type="text" id="cfg_auth_user" name="auth_user" />
+              <label for="auth_passw" data-i18n="password"></label>
+              <input type="password" id="cfg_auth_password" name="auth_passw" />
+            </details>
+            <hr />
+            <!-- NTP-Server -->
+            <details>
+              <summary data-i18n="ntp"></summary>
+              <div class="section-header">
+                <label for="ntp_enable" data-i18n="activate"></label>
+                <div class="switch-container">
+                  <input
+                    name="ntp_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_ntp_enable" />
+                </div>
+              </div>
+              <br />
+              <label for="ntp_server" data-i18n="server"></label>
+              <input type="text" id="cfg_ntp_server" name="ntp_server" />
+              <div class="leftright">
+                <label for="time_zone" data-i18n="ntp_tz"></label>
+                <button
+                  id="p12_ntp_open_dialog_btn"
+                  class="i_help"
+                  style="
+                    height: 20px;
+                    background-color: transparent;
+                    border: none;
+                  "></button>
+              </div>
+              <input type="text" id="cfg_ntp_tz" name="time_zone" />
+            </details>
+            <!-- Dialog OPEN-NTP-HELP -->
+            <dialog id="p12_ntp_dialog">
+              <article>
+                <div id="p12_ntp_help_output"></div>
+                <div class="dash-footer">
+                  <button
+                    id="p12_ntp_close_dialog_btn"
+                    data-i18n="close"
+                    style="width: 75%"></button>
+                </div>
+              </article>
+            </dialog>
+            <hr />
+            <!-- Geo Location -->
+            <details>
+              <summary data-i18n="geo_location"></summary>
+              <br />
+              <label for="latitude" data-i18n="latitude"></label>
+              <input type="number" id="cfg_geo_latitude" name="latitude" />
+              <label for="longitude" data-i18n="longitude"></label>
+              <input type="number" id="cfg_geo_longitude" name="longitude" />
+              <div class="info-box">
+                <div class="info-icon">&#9432;</div>
+                <div class="info-text" data-i18n="geo_info"></div>
+              </div>
+            </details>
+            <hr />
+            <!-- MQTT -->
+            <details>
+              <summary data-i18n="mqtt"></summary>
+              <div class="section-header">
+                <label for="mqtt_enable" data-i18n="activate"></label>
+                <div class="switch-container">
+                  <input
+                    name="mqtt_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_mqtt_enable" />
+                </div>
+              </div>
+              <div class="section-header">
+                <label for="mqtt_ha_enable">Home Assistant</label>
+                <input
+                  name="mqtt_ha_enable"
+                  type="checkbox"
+                  role="switch"
+                  id="cfg_mqtt_ha_enable" />
+              </div>
+              <br />
+              <label for="mqtt_server" data-i18n="server"></label>
+              <input
+                type="url"
+                data-type="ip"
+                oninput="validateIP(this)"
+                id="cfg_mqtt_server"
+                name="mqtt_server" />
+              <label for="mqtt_port" data-i18n="port"></label>
+              <input type="text" id="cfg_mqtt_port" name="mqtt_port" />
+              <label for="mqtt_topic" data-i18n="topic"></label>
+              <input type="text" id="cfg_mqtt_topic" name="mqtt_topic" />
+              <label for="mqtt_user" data-i18n="user"></label>
+              <input type="text" id="cfg_mqtt_user" name="mqtt_user" />
+              <label for="mqtt_password" data-i18n="password"></label>
+              <input
+                type="password"
+                id="cfg_mqtt_password"
+                name="mqtt_password" />
+              <label for="mqtt_ha_topic">Home Assistant Topic</label>
+              <input
+                type="text"
+                id="cfg_mqtt_ha_topic"
+                placeholder="homeassistant"
+                name="mqtt_ha_topic" />
+              <label for="mqtt_ha_device">Home Assistant Device Name</label>
+              <input
+                type="text"
+                id="cfg_mqtt_ha_device"
+                placeholder="jarolift"
+                name="mqtt_ha_device" />
+            </details>
+            <hr />
+            <!-- Hardware -->
+            <details>
+              <summary data-i18n="gpio"></summary>
+              <br />
+              <label for="gdo0">GDO0</label>
+              <input
+                class="num-input"
+                name="gdo0"
+                type="number"
+                id="cfg_gpio_gdo0"
+                placeholder="-1 to disable" />
+              <label for="gdo2">GDO2</label>
+              <input
+                class="num-input"
+                name="gdo2"
+                type="number"
+                id="cfg_gpio_gdo2"
+                placeholder="-1 to disable" />
+              <label for="sck">SCK</label>
+              <input
+                class="num-input"
+                name="sck"
+                type="number"
+                id="cfg_gpio_sck"
+                placeholder="-1 to disable" />
+              <label for="miso">MISO</label>
+              <input
+                class="num-input"
+                name="miso"
+                type="number"
+                id="cfg_gpio_miso"
+                placeholder="-1 to disable" />
+              <label for="mosi">MOSI</label>
+              <input
+                class="num-input"
+                name="mosi"
+                type="number"
+                id="cfg_gpio_mosi"
+                placeholder="-1 to disable" />
+              <label for="cs">CS</label>
+              <input
+                class="num-input"
+                name="cs"
+                type="number"
+                id="cfg_gpio_cs"
+                placeholder="-1 to disable" />
+              <label for="led_setup" data-i18n="led_setup"></label>
+              <input
+                class="num-input"
+                name="led_setup"
+                type="number"
+                id="cfg_gpio_led_setup"
+                placeholder="-1 to disable" />
+            </details>
+            <hr />
+            <!-- JAROLIFT -->
+            <details>
+              <summary>JAROLIFT</summary>
+              <div class="section-header">
+                <label for="learn_mode" data-i18n="learn_mode"></label>
+                <div class="switch-container">
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_learn_mode" />
+                </div>
+              </div>
+              <div class="info-box">
+                <div class="info-icon">&#9432;</div>
+                <div class="info-text" data-i18n="info_leanmode"></div>
+              </div>
+              <br />
+              <label for="master_MSB">master MSB (HEX-Format)</label>
+              <div class="row">
+                <input
+                  name="master_MSB"
+                  type="text"
+                  data-type="hex"
+                  data-length="8"
+                  id="cfg_jaro_masterMSB"
+                  oninput="validateHex(this)"
+                  pattern="[0-9a-fA-F]{1,8}"
+                  title="Enter up to 8 HEX digits"
+                  maxlength="8"
+                  onblur="formatHex(this)"
+                  disabled />
+                <button
+                  id="editBtn"
+                  onclick="toggleEdit(this, 'cfg_jaro_masterMSB')">
+                  Edit
+                </button>
+              </div>
+              <label for="master_LSB">master LSB (HEX-Format)</label>
+              <div class="row">
+                <input
+                  name="master_LSB"
+                  type="text"
+                  data-type="hex"
+                  data-length="8"
+                  id="cfg_jaro_masterLSB"
+                  oninput="validateHex(this)"
+                  pattern="[0-9a-fA-F]{1,8}"
+                  title="Enter up to 8 HEX digits"
+                  maxlength="8"
+                  onblur="formatHex(this)"
+                  disabled />
+                <button
+                  id="editBtn"
+                  onclick="toggleEdit(this, 'cfg_jaro_masterLSB')">
+                  Edit
+                </button>
+              </div>
+              <br />
+              <label for="serial" data-i18n="serial_nr++ (HEX-Format)"></label>
+              <div class="row">
+                <input
+                  name="serial"
+                  type="text"
+                  data-type="hex"
+                  data-length="6"
+                  id="cfg_jaro_serial"
+                  oninput="validateHex(this)"
+                  pattern="[0-9a-fA-F]{1,6}"
+                  title="Enter up to 6 HEX digits"
+                  maxlength="6"
+                  onblur="formatHex(this)"
+                  disabled />
+                <button
+                  id="editBtn"
+                  onclick="toggleEdit(this, 'cfg_jaro_serial')">
+                  Edit
+                </button>
+              </div>
+              <div class="info-box">
+                <div class="info-icon">&#9432;</div>
+                <div class="info-text" data-i18n="info_serial"></div>
+              </div>
+              <br />
+              <label for="devcnt">Device Counter</label>
+              <div class="row">
+                <input
+                  name="devcnt"
+                  type="number"
+                  id="p12_jaro_devcnt"
+                  disabled />
+                <button
+                  id="editBtn"
+                  onclick="toggleEdit(this, 'p12_jaro_devcnt')">
+                  Edit
+                </button>
+              </div>
+              <div class="info-box">
+                <div class="info-icon">&#9432;</div>
+                <div class="info-text" data-i18n="info_devcnt"></div>
+              </div>
+              <br />
+            </details>
+            <hr />
+            <!-- Shutter 1-16 -->
+            <details>
+              <summary data-i18n="shutter"></summary>
+              <br />
+              <div class="row">
+                <label for="shutter1" data-i18n="channel++ 1"></label>
+                <input
+                  name="shutter1"
+                  type="text"
+                  id="cfg_jaro_ch_name_0"
+                  data-sync="p01_jaro_ch_name_0, bitmask_dialog_ch_0, p04_shutter_name_0, p04_calib_name_0"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_0" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_0" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH1"
+                    id="cfg_jaro_ch_enable_0" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter2" data-i18n="channel++ 2"></label>
+                <input
+                  name="shutter2"
+                  type="text"
+                  id="cfg_jaro_ch_name_1"
+                  data-sync="p01_jaro_ch_name_1, bitmask_dialog_ch_1, p04_shutter_name_1, p04_calib_name_1"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_1" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_1" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH2"
+                    id="cfg_jaro_ch_enable_1" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter3" data-i18n="channel++ 3"></label>
+                <input
+                  name="shutter3"
+                  type="text"
+                  id="cfg_jaro_ch_name_2"
+                  data-sync="p01_jaro_ch_name_2, bitmask_dialog_ch_2, p04_shutter_name_2, p04_calib_name_2"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_2" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_2" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH3"
+                    id="cfg_jaro_ch_enable_2" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter4" data-i18n="channel++ 4"></label>
+                <input
+                  name="shutter4"
+                  type="text"
+                  id="cfg_jaro_ch_name_3"
+                  data-sync="p01_jaro_ch_name_3, bitmask_dialog_ch_3, p04_shutter_name_3, p04_calib_name_3"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_3" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_3" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH4"
+                    id="cfg_jaro_ch_enable_3" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter5" data-i18n="channel++ 5"></label>
+                <input
+                  name="shutter5"
+                  type="text"
+                  id="cfg_jaro_ch_name_4"
+                  data-sync="p01_jaro_ch_name_4, bitmask_dialog_ch_4, p04_shutter_name_4, p04_calib_name_4"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_4" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_4" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH5"
+                    id="cfg_jaro_ch_enable_4" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter6" data-i18n="channel++ 6"></label>
+                <input
+                  name="shutter6"
+                  type="text"
+                  id="cfg_jaro_ch_name_5"
+                  data-sync="p01_jaro_ch_name_5, bitmask_dialog_ch_5, p04_shutter_name_5, p04_calib_name_5"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_5" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_5" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH6"
+                    id="cfg_jaro_ch_enable_5" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter7" data-i18n="channel++ 7"></label>
+                <input
+                  name="shutter7"
+                  type="text"
+                  id="cfg_jaro_ch_name_6"
+                  data-sync="p01_jaro_ch_name_6, bitmask_dialog_ch_6, p04_shutter_name_6, p04_calib_name_6"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_6" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_6" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH7"
+                    id="cfg_jaro_ch_enable_6" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter8" data-i18n="channel++ 8"></label>
+                <input
+                  name="shutter8"
+                  type="text"
+                  id="cfg_jaro_ch_name_7"
+                  data-sync="p01_jaro_ch_name_7, bitmask_dialog_ch_7, p04_shutter_name_7, p04_calib_name_7"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_7" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_7" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH8"
+                    id="cfg_jaro_ch_enable_7" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter9" data-i18n="channel++ 9"></label>
+                <input
+                  name="shutter9"
+                  type="text"
+                  id="cfg_jaro_ch_name_8"
+                  data-sync="p01_jaro_ch_name_8, bitmask_dialog_ch_8, p04_shutter_name_8, p04_calib_name_8"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_8" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_8" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH9"
+                    id="cfg_jaro_ch_enable_8" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter10" data-i18n="channel++ 10"></label>
+                <input
+                  name="shutter10"
+                  type="text"
+                  id="cfg_jaro_ch_name_9"
+                  data-sync="p01_jaro_ch_name_9, bitmask_dialog_ch_9, p04_shutter_name_9, p04_calib_name_9"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_9" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_9" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH10"
+                    id="cfg_jaro_ch_enable_9" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter11" data-i18n="channel++ 11"></label>
+                <input
+                  name="shutter11"
+                  type="text"
+                  id="cfg_jaro_ch_name_10"
+                  data-sync="p01_jaro_ch_name_10, bitmask_dialog_ch_10, p04_shutter_name_10, p04_calib_name_10"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_10" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_10" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH11"
+                    id="cfg_jaro_ch_enable_10" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter12" data-i18n="channel++ 12"></label>
+                <input
+                  name="shutter12"
+                  type="text"
+                  id="cfg_jaro_ch_name_11"
+                  data-sync="p01_jaro_ch_name_11, bitmask_dialog_ch_11, p04_shutter_name_11, p04_calib_name_11"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_11" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_11" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH12"
+                    id="cfg_jaro_ch_enable_11" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter13" data-i18n="channel++ 13"></label>
+                <input
+                  name="shutter13"
+                  type="text"
+                  id="cfg_jaro_ch_name_12"
+                  data-sync="p01_jaro_ch_name_12, bitmask_dialog_ch_12, p04_shutter_name_12, p04_calib_name_12"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_12" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_12" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH13"
+                    id="cfg_jaro_ch_enable_12" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter14" data-i18n="channel++ 14"></label>
+                <input
+                  name="shutter14"
+                  type="text"
+                  id="cfg_jaro_ch_name_13"
+                  data-sync="p01_jaro_ch_name_13, bitmask_dialog_ch_13, p04_shutter_name_13, p04_calib_name_13"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_13" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_13" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH14"
+                    id="cfg_jaro_ch_enable_13" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter15" data-i18n="channel++ 15"></label>
+                <input
+                  name="shutter15"
+                  type="text"
+                  id="cfg_jaro_ch_name_14"
+                  data-sync="p01_jaro_ch_name_14, bitmask_dialog_ch_14, p04_shutter_name_14, p04_calib_name_14"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_14" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_14" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH15"
+                    id="cfg_jaro_ch_enable_14" />
+                </div>
+              </div>
+              <div class="row">
+                <label for="shutter16" data-i18n="channel++ 16"></label>
+                <input
+                  name="shutter16"
+                  type="text"
+                  id="cfg_jaro_ch_name_15"
+                  data-sync="p01_jaro_ch_name_15, bitmask_dialog_ch_15, p04_shutter_name_15, p04_calib_name_15"
+                  placeholder="name" />
+                <div>
+                  <button id="p12_unlearn_15" data-i18n="unlearn"></button>
+                </div>
+                <div>
+                  <button id="p12_learn_15" data-i18n="learn"></button>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="CH16"
+                    id="cfg_jaro_ch_enable_15" />
+                </div>
+              </div>
+            </details>
+            <hr />
+            <!-- Dialog OPEN-BITMASK-HELP -->
+            <dialog id="p12_bitmask_dialog">
+              <article>
+                <h3 data-i18n="help"></h3>
+                <div data-i18n="mask_help"></div>
+                <div class="dash-footer">
+                  <button
+                    onclick="closeGrpMaskHelp(this)"
+                    data-i18n="close"
+                    style="width: 75%"></button>
+                </div>
+              </article>
+            </dialog>
+            <!-- Group 1-6 -->
+            <details>
+              <summary data-i18n="groups"></summary>
+              <br />
+              <!-- Group 1 -->
+              <div class="section-header">
+                <label for="group0" data-i18n="group++ 1"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp0_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP0"
+                    id="cfg_jaro_grp_enable_0" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_0" data-i18n="name"></label>
+                  <input
+                    name="name_grp_0"
+                    type="text"
+                    id="cfg_jaro_grp_name_0"
+                    data-sync="p02_jaro_grp_name_0"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_0" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_0"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_0"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Group 2 -->
+              <div class="section-header">
+                <label for="group1" data-i18n="group++ 2"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp1_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP1"
+                    id="cfg_jaro_grp_enable_1" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_1" data-i18n="name"></label>
+                  <input
+                    name="name_grp_1"
+                    type="text"
+                    id="cfg_jaro_grp_name_1"
+                    data-sync="p02_jaro_grp_name_1"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_1" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_1"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_1"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Group 3 -->
+              <div class="section-header">
+                <label for="group2" data-i18n="group++ 3"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp2_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP2"
+                    id="cfg_jaro_grp_enable_2" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_2" data-i18n="name"></label>
+                  <input
+                    name="name_grp_2"
+                    type="text"
+                    id="cfg_jaro_grp_name_2"
+                    data-sync="p02_jaro_grp_name_2"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_2" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_2"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_2"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Group 4 -->
+              <div class="section-header">
+                <label for="group3" data-i18n="group++ 4"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp3_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP3"
+                    id="cfg_jaro_grp_enable_3" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_3" data-i18n="name"></label>
+                  <input
+                    name="name_grp_3"
+                    type="text"
+                    id="cfg_jaro_grp_name_3"
+                    data-sync="p02_jaro_grp_name_3"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_3" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_3"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_3"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Group 5 -->
+              <div class="section-header">
+                <label for="group4" data-i18n="group++ 5"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp4_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP4"
+                    id="cfg_jaro_grp_enable_4" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_4" data-i18n="name"></label>
+                  <input
+                    name="name_grp_4"
+                    type="text"
+                    id="cfg_jaro_grp_name_4"
+                    data-sync="p02_jaro_grp_name_4"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_4" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_4"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_4"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Group 6 -->
+              <div class="section-header">
+                <label for="group5" data-i18n="group++ 6"></label>
+                <div class="switch-container">
+                  <input
+                    name="grp5_enable"
+                    type="checkbox"
+                    role="switch"
+                    hideOpt="GRP5"
+                    id="cfg_jaro_grp_enable_5" />
+                </div>
+              </div>
+              <br />
+              <div class="details-container">
+                <div>
+                  <label for="name_grp_5" data-i18n="name"></label>
+                  <input
+                    name="name_grp_5"
+                    type="text"
+                    id="cfg_jaro_grp_name_5"
+                    data-sync="p02_jaro_grp_name_5"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <div class="label-with-button">
+                    <label for="mask_grp_5" data-i18n="mask"></label>
+                    <button
+                      onclick="openGrpMaskHelp(this)"
+                      class="i_help"
+                      style="
+                        height: 20px;
+                        background-color: transparent;
+                        border: none;
+                      "></button>
+                  </div>
+                  <input
+                    class="bitmask-input"
+                    name="mask_grp_5"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_grp_mask_5"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
+                    maxlength="16" />
+                </div>
+              </div>
+              <br />
+            </details>
+            <hr />
+            <!-- Remotes 1-16 -->
+            <details>
+              <summary data-i18n="remotes"></summary>
+              <!-- Remote 1 -->
+              <div class="section-header">
+                <label for="remote0" data-i18n="remote++ 1"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote0_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_0" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_0" data-i18n="name"></label>
+                  <input
+                    name="name_remote_0"
+                    type="text"
+                    id="cfg_jaro_remote_name_0"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_0" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_0"
+                    id="cfg_jaro_remote_serial_0"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_0" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_0"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_0"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 2 -->
+              <div class="section-header">
+                <label for="remote1" data-i18n="remote++ 2"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote1_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_1" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_1" data-i18n="name"></label>
+                  <input
+                    name="name_remote_1"
+                    type="text"
+                    id="cfg_jaro_remote_name_1"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_1" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_1"
+                    id="cfg_jaro_remote_serial_1"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_1" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_1"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_1"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 3 -->
+              <div class="section-header">
+                <label for="remote2" data-i18n="remote++ 3"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote2_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_2" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_2" data-i18n="name"></label>
+                  <input
+                    name="name_remote_2"
+                    type="text"
+                    id="cfg_jaro_remote_name_2"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_2" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_2"
+                    id="cfg_jaro_remote_serial_2"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_2" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_2"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_2"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 4 -->
+              <div class="section-header">
+                <label for="remote3" data-i18n="remote++ 4"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote3_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_3" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_3" data-i18n="name"></label>
+                  <input
+                    name="name_remote_3"
+                    type="text"
+                    id="cfg_jaro_remote_name_3"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_3" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_3"
+                    id="cfg_jaro_remote_serial_3"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_3" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_3"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_3"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 5 -->
+              <div class="section-header">
+                <label for="remote4" data-i18n="remote++ 5"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote4_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_4" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_4" data-i18n="name"></label>
+                  <input
+                    name="name_remote_4"
+                    type="text"
+                    id="cfg_jaro_remote_name_4"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_4" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_4"
+                    id="cfg_jaro_remote_serial_4"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_4" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_4"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_4"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 6 -->
+              <div class="section-header">
+                <label for="remote5" data-i18n="remote++ 6"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote5_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_5" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_5" data-i18n="name"></label>
+                  <input
+                    name="name_remote_5"
+                    type="text"
+                    id="cfg_jaro_remote_name_5"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_5" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_5"
+                    id="cfg_jaro_remote_serial_5"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_5" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_5"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_5"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 7 -->
+              <div class="section-header">
+                <label for="remote6" data-i18n="remote++ 7"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote6_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_6" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_6" data-i18n="name"></label>
+                  <input
+                    name="name_remote_6"
+                    type="text"
+                    id="cfg_jaro_remote_name_6"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_6" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_6"
+                    id="cfg_jaro_remote_serial_6"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_6" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_6"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_6"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 8 -->
+              <div class="section-header">
+                <label for="remote7" data-i18n="remote++ 8"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote7_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_7" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_7" data-i18n="name"></label>
+                  <input
+                    name="name_remote_7"
+                    type="text"
+                    id="cfg_jaro_remote_name_7"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_7" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_7"
+                    id="cfg_jaro_remote_serial_7"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_7" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_7"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_7"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 9 -->
+              <div class="section-header">
+                <label for="remote8" data-i18n="remote++ 9"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote8_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_8" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_8" data-i18n="name"></label>
+                  <input
+                    name="name_remote_8"
+                    type="text"
+                    id="cfg_jaro_remote_name_8"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_8" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_8"
+                    id="cfg_jaro_remote_serial_8"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_8" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_8"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_8"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 10 -->
+              <div class="section-header">
+                <label for="remote9" data-i18n="remote++ 10"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote9_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_9" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_9" data-i18n="name"></label>
+                  <input
+                    name="name_remote_9"
+                    type="text"
+                    id="cfg_jaro_remote_name_9"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_9" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_9"
+                    id="cfg_jaro_remote_serial_9"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_9" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_9"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_9"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 11 -->
+              <div class="section-header">
+                <label for="remote10" data-i18n="remote++ 11"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote10_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_10" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_10" data-i18n="name"></label>
+                  <input
+                    name="name_remote_10"
+                    type="text"
+                    id="cfg_jaro_remote_name_10"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_10" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_10"
+                    id="cfg_jaro_remote_serial_10"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_10" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_10"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_10"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 12 -->
+              <div class="section-header">
+                <label for="remote11" data-i18n="remote++ 12"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote11_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_11" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_11" data-i18n="name"></label>
+                  <input
+                    name="name_remote_11"
+                    type="text"
+                    id="cfg_jaro_remote_name_11"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_11" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_11"
+                    id="cfg_jaro_remote_serial_11"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_11" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_11"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_11"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 13 -->
+              <div class="section-header">
+                <label for="remote12" data-i18n="remote++ 13"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote12_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_12" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_12" data-i18n="name"></label>
+                  <input
+                    name="name_remote_12"
+                    type="text"
+                    id="cfg_jaro_remote_name_12"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_12" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_12"
+                    id="cfg_jaro_remote_serial_12"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_12" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_12"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_12"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 14 -->
+              <div class="section-header">
+                <label for="remote13" data-i18n="remote++ 14"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote13_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_13" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_13" data-i18n="name"></label>
+                  <input
+                    name="name_remote_13"
+                    type="text"
+                    id="cfg_jaro_remote_name_13"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_13" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_13"
+                    id="cfg_jaro_remote_serial_13"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_13" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_13"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_13"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 15 -->
+              <div class="section-header">
+                <label for="remote14" data-i18n="remote++ 15"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote14_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_14" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_14" data-i18n="name"></label>
+                  <input
+                    name="name_remote_14"
+                    type="text"
+                    id="cfg_jaro_remote_name_14"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_14" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_14"
+                    id="cfg_jaro_remote_serial_14"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_14" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_14"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_14"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+              <hr />
+              <!-- Remote 16 -->
+              <div class="section-header">
+                <label for="remote15" data-i18n="remote++ 16"></label>
+                <div class="switch-container">
+                  <input
+                    name="remote15_enable"
+                    type="checkbox"
+                    role="switch"
+                    id="cfg_jaro_remote_enable_15" />
+                </div>
+              </div>
+              <br />
+              <div class="settings-container">
+                <div>
+                  <label for="name_remote_15" data-i18n="name"></label>
+                  <input
+                    name="name_remote_15"
+                    type="text"
+                    id="cfg_jaro_remote_name_15"
+                    placeholder="name" />
+                </div>
+                <div>
+                  <label for="serial_remote_15" data-i18n="serial_nr"></label>
+                  <input
+                    name="serial_remote_15"
+                    id="cfg_jaro_remote_serial_15"
+                    type="text"
+                    data-type="hex"
+                    data-length="6"
+                    oninput="validateHex(this)"
+                    pattern="[0-9a-fA-F]{1,6}"
+                    title="Enter up to 6 HEX digits"
+                    maxlength="6"
+                    onblur="formatHex(this)"
+                    placeholder="serial" />
+                </div>
+                <div>
+                  <label for="mask_remote_15" data-i18n="mask"></label>
+                  <input
+                    class="bitmask-input"
+                    name="mask_remote_15"
+                    type="text"
+                    data-type="bin"
+                    id="cfg_jaro_remote_mask_15"
+                    oninput="validateBin(this)"
+                    onblur="formatBin(this)"
+                    pattern="[01]{1,16}"
+                    placeholder="click for Dialog"
+                    maxlength="16" />
+                </div>
+              </div>
+            </details>
+            <hr />
+            <!-- Language -->
+            <details>
+              <summary data-i18n="language"></summary>
+              <select id="cfg_lang">
+                <option value="0" data-i18n="german"></option>
+                <option value="1" data-i18n="english"></option>
+              </select>
+            </details>
+            <hr />
+            <!-- Buttons -->
+            <button
+              id="p12_btn_restart"
+              data-i18n="restart"
+              onclick="restartFunction()"
+              style="width: 100%; margin-bottom: 10px"></button>
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+      <!--SECTION-END-->
+    </main>
+    <!-- Footer -->
+    <footer
+      style="
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+      <div id="status">STATUS</div>
+    </footer>
+  </body>
+</html>

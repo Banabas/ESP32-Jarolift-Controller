@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ESP Async Web Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../css/pico.css" />
+    <link rel="stylesheet" type="text/css" href="../css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <script src="../js/fun.js" defer></script>
+    <script src="../js/doc.js" defer></script>
+    <script src="../js/lang.js" defer></script>
+    <style></style>
+    <script>
+      function test() {
+        document.getElementById("tab13").classList.add("active");
+        localizePage("de");
+      }
+      setInterval(test, 1000);
+    </script>
+  </head>
+  <body>
+    <!-- Layout -->
+    <header
+      style="
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "></header>
+    <!-- Tab-Content -->
+    <main class="container">
+      <!--SECTION-START-->
+      <div id="tab13" class="tab-content">
+        <div class="grid" style="max-width: 800px">
+          <div>
+            <h4 data-i18n="gpio"></h2>
+            <h6 data-i18n="gpio_info"></h6>
+              <table>
+              <tr>
+                <th>Signal</th>
+                <th>GPIO</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td>GD0</td>
+                  <td>21</td>
+                </tr>
+                <tr>
+                  <td>GD2</td>
+                  <td>22</td>
+                </tr>
+                <tr>
+                  <td>CLK</td>
+                  <td>18</td>
+                </tr>
+                <tr>
+                  <td>MOSI</td>
+                  <td>23</td>
+                </tr>
+                <tr>
+                  <td>MISO</td>
+                  <td>19</td>
+                </tr>
+                <tr>
+                  <td>CS</td>
+                  <td>5</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="info-box">
+              <div class="info-icon">&#9432;</div>
+              <div class="info-text" data-i18n="gpio_restart_info"></div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <!--GPIO-END-->
+        <div class="grid" style="max-width: 800px">
+          <div>
+            <h4 data-i18n="mqtt"></h4>
+            <h6 data-i18n="general"></h6>
+            <table>
+              <tr>
+                <th>Command</th>
+                <th>Topic</th>
+                <th>Payload</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td>Restart ESP</td>
+                  <td>../cmd/restart</td>
+                  <td>none</td>
+                </tr>
+              </tbody>
+            </table>
+            <h6 data-i18n="shutter"></h6>
+            <table>
+              <tr>
+                <th>Command</th>
+                <th>Topic</th>
+                <th>Payload</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td>Restart ESP</td>
+                  <td>../cmd/restart</td>
+                  <td>none</td>
+                </tr>
+                <tr>
+                  <td>Shutter UP</td>
+                  <td>../cmd/shutter/1 ... cmd/shutter/16</td>
+                  <td>{UP, OPEN, 0}</td>
+                </tr>
+                <tr>
+                  <td>Shutter DOWN</td>
+                  <td>../cmd/shutter/1 ... cmd/shutter/16</td>
+                  <td>{DOWN, CLOSE, 1}</td>
+                </tr>
+                <tr>
+                  <td>Shutter STOP</td>
+                  <td>../cmd/shutter/1 ... cmd/shutter/16</td>
+                  <td>{STOP, 2}</td>
+                </tr>
+                <tr>
+                  <td>Shutter SHADE</td>
+                  <td>../cmd/shutter/1 ... cmd/shutter/16</td>
+                  <td>{SHADE, 3}</td>
+                </tr>
+              </tbody>
+            </table>
+            <h6 data-i18n="groups"></h6>
+            <table>
+              <tr>
+                <th>Command</th>
+                <th>Topic</th>
+                <th>Payload</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td>Group UP</td>
+                  <td>../cmd/group/1 ... cmd/shutter/6</td>
+                  <td>{UP, OPEN, 0}</td>
+                </tr>
+                <tr>
+                  <td>Group DOWN</td>
+                  <td>../cmd/group/1 ... cmd/shutter/6</td>
+                  <td>{DOWN, CLOSE, 1}</td>
+                </tr>
+                <tr>
+                  <td>Group STOP</td>
+                  <td>../cmd/group/1 ... cmd/shutter/6</td>
+                  <td>{STOP, 2}</td>
+                </tr>
+                <tr>
+                  <td>Group SHADE</td>
+                  <td>../cmd/group/1 ... cmd/shutter/6</td>
+                  <td>{SHADE, 3}</td>
+                </tr>
+              </tbody>
+            </table>
+            <h6 data-i18n="group$ $mask"></h6>
+            <div data-i18n="grp_mask_help"></div><br>
+            <code> Binary: 0b0000000000010101</code><br>
+            <code> Hex: 0x15</code><br>
+            <code> Decimal: 21</code><br><br>
+            
+            <table>
+              <tr>
+                <th>Command</th>
+                <th>Topic</th>
+                <th>Payload</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td>Group UP</td>
+                  <td>../cmd/group/up</td>
+                  <td>{0b0000000000010101, 0x15, 21}</td>
+                </tr>
+                <tr>
+                  <td>Group DOWN</td>
+                  <td>../cmd/group/down</td>
+                  <td>{0b0000000000010101, 0x15, 21}</td>
+                </tr>
+                <tr>
+                  <td>Group STOP</td>
+                  <td>../cmd/group/stop</td>
+                  <td>{0b0000000000010101, 0x15, 21}</td>
+                </tr>
+                <tr>
+                  <td>Group SHADE</td>
+                  <td>../cmd/group/shade</td>
+                  <td>{0b0000000000010101, 0x15, 21}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="info-box">
+              <div class="info-icon">&#9432;</div>
+              <div class="info-text" data-i18n="mqtt_info2"></div>
+            </div>
+        </div>
+      </div>
+      <!--SECTION-END-->
+    </main>
+    <!-- Footer -->
+    <footer
+      style="
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+      <div id="status">STATUS</div>
+    </footer>
+  </body>
+</html>

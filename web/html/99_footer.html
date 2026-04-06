@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <title>ESP Async Web Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../css/pico.css" />
+    <link rel="stylesheet" type="text/css" href="../css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <script src="../js/doc.js" defer></script>
+    <script src="../js/lang.js" defer></script>
+    <script src="../js/fun.js" defer></script>
+    <script src="../js/events.js" defer></script>
+    <style></style>
+    <script>
+      function test() {
+        localizePage("de");
+      }
+      setInterval(test, 1000);
+    </script>
+  </head>
+  <body>
+    <section class="home-section">
+      <main class="container-fluid">
+        <!--SECTION-START-->
+      </main>
+      <footer>
+        <div
+          id="connectionLostBar"
+          class="footerBar"
+          style="display: none; background-color: #732e2e">
+          <div data-i18n="lost_connection"></div>
+          <button
+            id="p99_reloadButton"
+            class="svg i_auto"
+            style="width: 50px"></button>
+        </div>
+        <div
+          id="errorBar"
+          class="footerBar"
+          style="display: none; background-color: #732e2e">
+          <div id="errorBarText"></div>
+        </div>
+        <div
+          id="msgBar"
+          class="footerBar msgBar"
+          style="display: none; background-color: #515F7A">
+          <div id="msgBarText"></div>
+        </div>
+      </footer>
+    </section>
+  </body>
+</html>
+<!--SECTION-END-->

@@ -1,0 +1,17 @@
+## OS specific ########
+.DS_Store
+
+## Project files ######
+.pio
+.clang_complete
+.gcc-flags.json
+.DS_Store
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/c_cpp_properties.json
+.travis.yml
+
+connect.txt
+zTest/
+TODO.txt
