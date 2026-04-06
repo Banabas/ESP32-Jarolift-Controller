@@ -12,16 +12,16 @@
 
 <div align="center">
 
-[![Current Release](https://img.shields.io/github/release/dewenni/ESP32-Jarolift-Controller.svg)](https://github.com/dewenni/ESP32-Jarolift-Controller/releases/latest)
-![GitHub Release Date](https://img.shields.io/github/release-date/dewenni/ESP32-Jarolift-Controller)
-![GitHub last commit](https://img.shields.io/github/last-commit/dewenni/ESP32-Jarolift-Controller)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dewenni/ESP32-Jarolift-Controller/total?label=downloads%20total&color=%23f0cc59)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dewenni/ESP32-Jarolift-Controller/latest/total?label=downloads%20latest%20Release&color=%23f0cc59)
+[![Current Release](https://img.shields.io/github/release/Banabas/ESP32-Jarolift-Controller.svg)](https://github.com/Banabas/ESP32-Jarolift-Controller/releases/latest)
+![GitHub Release Date](https://img.shields.io/github/release-date/Banabas/ESP32-Jarolift-Controller)
+![GitHub last commit](https://img.shields.io/github/last-commit/Banabas/ESP32-Jarolift-Controller)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Banabas/ESP32-Jarolift-Controller/total?label=downloads%20total&color=%23f0cc59)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/Banabas/ESP32-Jarolift-Controller/latest/total?label=downloads%20latest%20Release&color=%23f0cc59)
 
-![GitHub watchers](https://img.shields.io/github/watchers/dewenni/ESP32-Jarolift-Controller?style=social)
-[![GitHub stars](https://img.shields.io/github/stars/dewenni/ESP32-Jarolift-Controller.svg?style=social&label=Star)](https://github.com/dewenni/ESP32-Jarolift-Controller/stargazers/)
+![GitHub watchers](https://img.shields.io/github/watchers/Banabas/ESP32-Jarolift-Controller?style=social)
+[![GitHub stars](https://img.shields.io/github/stars/Banabas/ESP32-Jarolift-Controller.svg?style=social&label=Star)](https://github.com/Banabas/ESP32-Jarolift-Controller/stargazers/)
 
-[![Stargazers over time](http://starchart.cc/dewenni/ESP32-Jarolift-Controller.svg?background=%23ffffff00&axis=%236c81a6&line=%236c81a6)](https://github.com/dewenni/ESP32-Jarolift-Controller/stargazers/)
+[![Stargazers over time](http://starchart.cc/Banabas/ESP32-Jarolift-Controller.svg?background=%23ffffff00&axis=%236c81a6&line=%236c81a6)](https://github.com/Banabas/ESP32-Jarolift-Controller/stargazers/)
 
 </div>
 
@@ -32,7 +32,7 @@ If you like this project, feel free to push the <b>[Star ⭐️]</b> button and 
 <br><br>
 And if you'd like to support my work, you can also<p>
 
-[![Sponsor](https://img.shields.io/badge/Sponsor%20me%20on-GitHub-%23EA4AAA.svg?style=for-the-badge&logo=github)](https://github.com/sponsors/dewenni)
+[![Sponsor](https://img.shields.io/badge/Sponsor%20me%20on-GitHub-%23EA4AAA.svg?style=for-the-badge&logo=github)](https://github.com/Banabas)
 
 </div>
 
@@ -65,7 +65,7 @@ stand alone timer function with fixed time, sunrise or sunset as trigger.
 ### WebUI-Demo
 
 For a first impression of the functions and the WebUI, a limited demo is also available.  
-This can be accessed via the following link: [WebUI-DEMO](https://dewenni.github.io/ESP32-Jarolift-Controller/)
+This can be accessed via the following link: [WebUI-DEMO](https://Banabas.github.io/ESP32-Jarolift-Controller/)
 
 Experimental version.
 Use at your own risk. For private/educational use only. (Keeloq algorithm licensed only to TI Microcontrollers)
@@ -113,7 +113,7 @@ The project home is here: [Project Home](http://www.bastelbudenbuben.de/2017/04/
 
 # Hardware
 
-you can find working setups from users of this project here: [working setups](https://github.com/dewenni/ESP32-Jarolift-Controller/discussions/34)
+you can find working setups from users of this project here: [working setups](https://github.com/Banabas/ESP32-Jarolift-Controller/discussions/34)
 
 ## ESP32
 
