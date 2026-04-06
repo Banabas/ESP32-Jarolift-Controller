@@ -20,33 +20,41 @@ def extract_version():
         return m.group(1) if m else "unknown"
 
 
-def write_flash_instructions(release_path, version, mcu):
+def write_flash_instructions(release_path, version):
     """Create a README.txt with flashing instructions for this release."""
     readme = os.path.join(release_path, "README.txt")
+    mcus = ["esp32", "esp32s2", "esp32s3", "esp32c3"]
+    file_list = ""
+    for m in mcus:
+        file_list += f"""
+  {PROJECT_NAME}_{version}_{m}_flash.bin
+    -> First-time installation for {m.upper()}
+    -> esptool.py --chip {m} --baud 460800 write_flash 0x0 {PROJECT_NAME}_{version}_{m}_flash.bin
+
+  {PROJECT_NAME}_{version}_{m}_ota.bin
+    -> OTA update for {m.upper()} via WebUI -> Tools -> OTA Update
+"""
     content = f"""{PROJECT_NAME} {version}
 {'=' * (len(PROJECT_NAME) + len(version) + 1)}
 
+Supported chips
+---------------
+  esp32   - ESP32-WROOM, ESP32-WROVER, ESP32-MINI
+  esp32s2 - ESP32-S2
+  esp32s3 - ESP32-S3
+  esp32c3 - ESP32-C3
+
 Files in this release
 ---------------------
-{PROJECT_NAME}_{version}_{mcu}_flash.bin
-  Complete flash image – use this for first-time installation.
-  Flash with esptool.py or the ESP32 Flash Download Tool.
-
-  esptool.py command:
-    esptool.py --chip {mcu} --baud 460800 write_flash 0x0 {PROJECT_NAME}_{version}_{mcu}_flash.bin
-
-{PROJECT_NAME}_{version}_{mcu}_ota.bin
-  OTA update image – use this for over-the-air updates via the web interface.
-  Upload through: WebUI -> Tools -> OTA Update
-
+{file_list}
 Position control feature
 ------------------------
 This build adds time-based position control (0-100%) for Jarolift TDEF shutters.
-Calibration is required for each channel (Service page -> Travel Time Calibration).
+Calibration required for each channel (Service page -> Travel Time Calibration).
 
 Source code
 -----------
-https://github.com/dewenni/ESP32-Jarolift-Controller
+https://github.com/Banabas/ESP32-Jarolift-Controller
 """
     with open(readme, "w") as f:
         f.write(content)
@@ -98,7 +106,8 @@ def merge_bin(source, target, env):
     shutil.copyfile(merged_bin_path,       flash_dest)
     shutil.copyfile(env.subst(APP_BIN),    ota_dest)
 
-    write_flash_instructions(release_path, version, mcu)
+    if pioenv == "esp32":
+        write_flash_instructions(release_path, version)
 
     print(f"\n[build_release] Release files written to: {release_path}")
     print(f"  {flash_name}  (full flash image)")
