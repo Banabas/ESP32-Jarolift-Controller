@@ -57,9 +57,7 @@ Jeder Rollladen kann nun auf eine beliebige Position zwischen 0% (vollstaendig g
 - **MQTT-Positionssteuerung** – eine Zahl (0–100) als Payload senden, um einen Rollladen auf diese Position zu fahren
 - **Home Assistant Integration** – Rolllaeden erscheinen als Cover-Entitaeten mit Positionsschieberegler; Positionen >= 75% werden als "geschlossen" gemeldet, darunter als "geoeffnet"
 
-<!-- PLATZHALTER: Fuege hier einen Screenshot des neuen Positionsschiebereglers im Kanaele-Tab ein -->
-<!-- Empfohlener Dateiname: Doc/webUI_position_slider.png -->
-<!-- Beispiel: ![Positionsschieberegler](Doc/webUI_position_slider.png) -->
+![Positionsschieberegler](Doc/webUI_position_slider.png)
 
 ### Kalibrierung
 
@@ -76,9 +74,7 @@ Die Kalibrierung misst die tatsaechliche Fahrzeit des Motors in beiden Richtunge
 6. Wenn vollstaendig geoeffnet, **"Stopp – Rollladen oben"** klicken
 7. Beide Fahrzeiten werden automatisch gespeichert
 
-<!-- PLATZHALTER: Fuege hier einen Screenshot der Kalibrierungs-Karte im Service-Tab ein -->
-<!-- Empfohlener Dateiname: Doc/webUI_calibration.png -->
-<!-- Beispiel: ![Kalibrierung](Doc/webUI_calibration.png) -->
+![Kalibrierung](Doc/webUI_calibration.png)
 
 > [!TIP]
 > Die Kalibrierung muss nur einmal pro Kanal durchgefuehrt werden. Die gemessenen Fahrzeiten bleiben nach einem Neustart erhalten und werden in der Konfigurationsdatei gespeichert.

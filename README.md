@@ -57,9 +57,7 @@ Each roller shutter can now be moved to a specific position between 0% (fully op
 - **MQTT position control** — send a number (0–100) as payload to move a shutter to that position
 - **Home Assistant integration** — shutters appear as cover entities with a position slider; positions >= 75% are reported as "closed", below 75% as "open"
 
-<!-- PLACEHOLDER: Add a screenshot of the new position slider in the Channels tab here -->
-<!-- Suggested filename: Doc/webUI_position_slider.png -->
-<!-- Example: ![Position Slider](Doc/webUI_position_slider.png) -->
+![Position Slider](Doc/webUI_position_slider.png)
 
 ### Calibration
 
@@ -76,9 +74,7 @@ The calibration measures the actual travel time of the motor in both directions.
 6. When fully open, click **"Stop – Shutter open"**
 7. Both travel times are saved automatically
 
-<!-- PLACEHOLDER: Add a screenshot of the calibration card in the Service tab here -->
-<!-- Suggested filename: Doc/webUI_calibration.png -->
-<!-- Example: ![Calibration](Doc/webUI_calibration.png) -->
+![Calibration](Doc/webUI_calibration.png)
 
 > [!TIP]
 > Calibration only needs to be done once per channel. The measured travel times survive reboots and are stored in the configuration file.
