@@ -1,12 +1,14 @@
 <div align="center">
 <img style="width: 100px;" src="./Doc/ESP32_Jarolift_Controller_Logo.svg">
 
-<h3 style="text-align: center;">ESP32-Jarolift-Controller</h3>
+<h3>ESP32-Jarolift-Controller</h3>
+
+<p><em>Fork von <a href="https://github.com/dewenni/ESP32-Jarolift-Controller">dewenni/ESP32-Jarolift-Controller</a> – erweitert um prozentbasierte Positionssteuerung</em></p>
 </div>
 
 -----
 
-**[🇬🇧  english version of this description](README.md)**
+**[🇬🇧 English version of this description](README.md)**
 
 -----
 
@@ -21,68 +23,119 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/Banabas/ESP32-Jarolift-Controller?style=social)
 [![GitHub stars](https://img.shields.io/github/stars/Banabas/ESP32-Jarolift-Controller.svg?style=social&label=Star)](https://github.com/Banabas/ESP32-Jarolift-Controller/stargazers/)
 
-[![Stargazers over time](http://starchart.cc/Banabas/ESP32-Jarolift-Controller.svg?background=%23ffffff00&axis=%236c81a6&line=%236c81a6)](https://github.com/Banabas/ESP32-Jarolift-Controller/stargazers/)
-
-</div>
-
------
-
-<div align="center">
-Wenn dir dieses Projekt gefällt, drücke genre auf den <b>[Stern ⭐️]</b> Button and drücke <b>[Watch 👁]</b> um auf dem Laufenden zu bleiben.
-<br><br>
-Und wenn du meine Arbeit unterstützen möchtest, kannst auch folgendes nutzen <p>
-
-[![Sponsor](https://img.shields.io/badge/Sponsor%20me%20on-GitHub-%23EA4AAA.svg?style=for-the-badge&logo=github)](https://github.com/Banabas)
-
 </div>
 
 -----
 
 # ESP32-Jarolift-Controller
 
-Steuerung von Jarolift(TM) TDEF 433MHz Funkrollläden über **ESP32** und **CC1101** Transceiver Modul im asynchronen Modus.
+Steuerung von Jarolift(TM) TDEF 433MHz Funkrolllaeden ueber **ESP32** und **CC1101** Transceiver-Modul im asynchronen Modus.
+
+> [!NOTE]
+> Dies ist ein Fork des hervorragenden Originalprojekts von [dewenni](https://github.com/dewenni/ESP32-Jarolift-Controller).
+> Es erweitert das Original um **zeitbasierte Positionssteuerung** fuer einzelne Rolllaeden.
+> Alle Code-Aenderungen in diesem Fork wurden mit Unterstuetzung von [Claude](https://claude.ai) (Anthropic KI) entwickelt,
+> da der Repository-Inhaber keine Programmierkenntnisse besitzt.
+
+-----
+
+## Was ist neu in diesem Fork?
+
+### Prozentbasierte Positionssteuerung
+
+Die wichtigste Neuerung ist die **zeitbasierte Positionssteuerung**.  
+Jeder Rollladen kann nun auf eine beliebige Position zwischen 0% (vollstaendig geoeffnet) und 100% (vollstaendig geschlossen) gefahren werden – direkt ueber die Weboberflaeche, per MQTT oder ueber Home Assistant.
+
+> **Wie es funktioniert:** Da Jarolift-Motoren ihre tatsaechliche Position nicht zurueckmelden, misst der Controller wie lange der Motor von vollstaendig geoeffnet bis vollstaendig geschlossen braucht (und zurueck). Anhand dieser kalibrierten Fahrzeit berechnet er genau, wann der Motor gestoppt werden muss, um jede gewuenschte Position zu erreichen.
+
+**Besonderheiten der Positionssteuerung:**
+
+- **0–100% Positionsschieberegler** in der WebUI fuer jeden Kanal
+- **Separate Kalibrierung** fuer die Abwaerts- (Schliessen) und Aufwaerts-Fahrzeit (Oeffnen) – da Motoren in beiden Richtungen unterschiedlich schnell fahren
+- **Praezises Timing** – der Stoppbefehl wird exakt in dem Millisekunden ausgegeben, in dem der RF-Befehl des Motors gesendet wird
+- **Positionsspeicher** – die zuletzt bekannte Position wird im Flash-Speicher gespeichert und nach einem Neustart wiederhergestellt
+- **MQTT-Positionssteuerung** – eine Zahl (0–100) als Payload senden, um einen Rollladen auf diese Position zu fahren
+- **Home Assistant Integration** – Rolllaeden erscheinen als Cover-Entitaeten mit Positionsschieberegler; Positionen >= 75% werden als "geschlossen" gemeldet, darunter als "geoeffnet"
+
+<!-- PLATZHALTER: Fuege hier einen Screenshot des neuen Positionsschiebereglers im Kanaele-Tab ein -->
+<!-- Empfohlener Dateiname: Doc/webUI_position_slider.png -->
+<!-- Beispiel: ![Positionsschieberegler](Doc/webUI_position_slider.png) -->
+
+### Kalibrierung
+
+Bevor die Positionssteuerung genutzt werden kann, muss jeder Kanal einmalig kalibriert werden.  
+Die Kalibrierung misst die tatsaechliche Fahrzeit des Motors in beiden Richtungen.
+
+**Kalibrierungsschritte (Service-Seite):**
+
+1. Kanal im Dropdown auswaehlen
+2. Rollladen vollstaendig oeffnen (Hoch-Taste druecken bis zum Anschlag)
+3. Auf **"Start Kalibrierung"** klicken – der Rollladen faehrt automatisch nach unten
+4. Wenn der Rollladen unten angekommen ist, **"Stopp – Rollladen unten"** klicken
+5. Der Rollladen faehrt nun automatisch wieder hoch
+6. Wenn vollstaendig geoeffnet, **"Stopp – Rollladen oben"** klicken
+7. Beide Fahrzeiten werden automatisch gespeichert
+
+<!-- PLATZHALTER: Fuege hier einen Screenshot der Kalibrierungs-Karte im Service-Tab ein -->
+<!-- Empfohlener Dateiname: Doc/webUI_calibration.png -->
+<!-- Beispiel: ![Kalibrierung](Doc/webUI_calibration.png) -->
+
+> [!TIP]
+> Die Kalibrierung muss nur einmal pro Kanal durchgefuehrt werden. Die gemessenen Fahrzeiten bleiben nach einem Neustart erhalten und werden in der Konfigurationsdatei gespeichert.
+
+### Aktualisierte Home Assistant Discovery
+
+- Jeder Rollladen wird als **Cover-Entitaet mit Positionsschieberegler** (0–100%) veroeffentlicht
+- Ein separater **Schatten-Button** wird fuer jeden Rollladen hinzugefuegt
+- Statuslogik: Position >= 75% -> `closed`, Position > 0% -> `stopped`, Position = 0% -> `open`
+- Positionsbefehle von HA werden automatisch invertiert (ESP32: 0 = offen, 100 = geschlossen)
+
+### Position per MQTT
+
+```text
+Befehl:     Rollladen auf Position fahren (0-100%)
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {0 ... 100}   (Ganzzahl, 0 = vollstaendig offen, 100 = vollstaendig geschlossen)
+
+Beispiel:   Rollladen 1 auf 50% fahren
+Topic:      jarolift/cmd/shutter/1
+Payload:    50
+```
+
+> [!IMPORTANT]
+> Der Kanal muss kalibriert sein, bevor Positionsbefehle funktionieren.
+> Positionsbefehle an unkalibrierte Kanaele werden stillschweigend ignoriert.
+
+-----
 
 ## Features
 
-- **Webbasierte Benutzeroberfläche (WebUI):**  
-Eine moderne, mobilfreundliche Schnittstelle für einfache Konfiguration und Steuerung.
+- **Webbasierte Benutzeroberflaeche (WebUI):**
+  Eine moderne, mobilfreundliche Schnittstelle fuer einfache Konfiguration und Steuerung.
 
-- **MQTT-Unterstützung:**  
-Die Kommunikation und Steuerung der Geräte erfolgt über MQTT, ein leichtgewichtiges und zuverlässiges Messaging-Protokoll.
+- **Prozentbasierte Positionssteuerung:** *(neu in diesem Fork)*
+  Jeden Rollladen auf eine beliebige Position von 0% bis 100% fahren – per Schieberegler, MQTT oder Home Assistant.
 
-- **HomeAssistant-Integration:**  
-Automatische Geräteerkennung in HomeAssistant durch MQTT Auto Discovery für nahtlose Integration.
+- **MQTT-Unterstuetzung:**
+  Kommunikation und Steuerung ueber MQTT, ein leichtgewichtiges und zuverlaessiges Messaging-Protokoll.
 
-- **Unterstützung für bis zu 16 Rollläden:**  
-Steuern von bis zu 16 Rollläden, die alle über die WebUI und MQTT verwaltet werden.
+- **Home Assistant Integration:**
+  Automatische Geraeteerkennung per MQTT Auto Discovery, inkl. Positionsschieberegler und Schatten-Buttons.
 
-- **Unterstützung für bis zu 6 Rollladengruppen:**  
-Definiere bis zu 6 Rollladengruppen, um mehrere Rollläden auf einmal zu steuern
+- **Bis zu 16 Rolllaeden:**
+  Steuerung von bis zu 16 Rolllaeden ueber WebUI und MQTT.
 
-- **Timer Funktion**  
-für Stand-Alone Anwendung auch mit integrierter Timer Funktion mit fester Uhrzeit, Sonnenaufgang oder Sonnenuntergang als Auslöser.
+- **Bis zu 6 Rollladengruppen:**
+  Gruppen definieren, um mehrere Rolllaeden gleichzeitig zu steuern.
 
-### WebUI-Demo
-
-Um sich einen ersten Eindruck von den Funktionen und der WebUI zu verschaffen, steht auch eine eingeschränkte Demo zur Verfügung.  
-Diese kann über den folgenden Link aufgerufen werden: [WebUI-DEMO](https://Banabas.github.io/ESP32-Jarolift-Controller/)
-
-Die Verwendung erfolgt auf eigene Gefahr. Nur für den privaten/schulischen Gebrauch. (Keeloq-Algorithmus ist nur für TI-Mikrocontroller lizenziert)
-Dieses Projekt ist in keiner Weise mit dem Hersteller der Jarolift-Komponenten verbunden.
-Jarolift ist ein Warenzeichen der Schöneberger Rolladenfabrik GmbH & Co. KG
-
-Diese Version ist für einen ESP32 und basiert auf Ideen und Code von [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT).
-
-### Project Homepage, Forum und Author
-
-Der ursprüngliche Steuercode wurde von Steffen Hille im Nov. 2017 geschrieben.
-
-Die Homepage des Projekts ist hier: [Project Home](http://www.bastelbudenbuben.de/2017/04/25/protokollanalyse-von-jarolift-tdef-motoren/)
+- **Timer-Funktion:**
+  Standalone-Timer mit fester Uhrzeit, Sonnenaufgang oder Sonnenuntergang als Ausloeser.
 
 -----
 
 # Inhaltsverzeichnis
 
+- [Was ist neu in diesem Fork?](#was-ist-neu-in-diesem-fork)
 - [Hardware](#hardware)
   - [ESP32](#esp32)
   - [CC1101 433Mhz](#cc1101-433mhz)
@@ -94,10 +147,10 @@ Die Homepage des Projekts ist hier: [Project Home](http://www.bastelbudenbuben.d
   - [Setup-Mode](#setup-mode)
   - [Konfiguration](#konfiguration)
   - [Filemanager](#filemanager)
-  - [Anlernen von Rolläden](#anlernen-von-rolläden)
+  - [Anlernen von Rolllaeden](#anlernen-von-rolllaeden)
   - [Migration](#migration)
 - [WebUI](#webui)
-  - [Kanäle](#kanäle)
+  - [Kanaele](#kanaele)
   - [Gruppen](#gruppen)
   - [Timer](#timer)
 - [MQTT](#mqtt)
@@ -112,50 +165,50 @@ Die Homepage des Projekts ist hier: [Project Home](http://www.bastelbudenbuben.d
 
 # Hardware
 
-Du findest funktionierende Setups von Benutzern dieses Projekts hier: [funktionierende Setups](https://github.com/Banabas/ESP32-Jarolift-Controller/discussions/34)
+Funktionierende Setups von Benutzern dieses Projekts: [funktionierende Setups](https://github.com/Banabas/ESP32-Jarolift-Controller/discussions/34)
 
 ## ESP32
 
-Die Firmware ist aktuell nur für folgende Chips erstellt
+Die Firmware ist fuer folgende Chips verfuegbar:
 
-**Standard ESP32 (Xtensa® 32-bit LX6, 4MB Flash)**
+**Standard ESP32 (Xtensa 32-bit LX6, 4MB Flash)**
 
 - `ESP32-WROOM-32 Serie` (z.B. WROOM, WROOM-32D, WROOM-32U)
-- `ESP32-WROVER Serie` (z. B. WROVER, WROVER-B, WROVER-IE)
+- `ESP32-WROVER Serie` (z.B. WROVER, WROVER-B, WROVER-IE)
 - `ESP32-MINI Serie`
-- `ESP32-S2 series`
-- `ESP32-S3 series`
-- `ESP32-C3 series`
+- `ESP32-S2`
+- `ESP32-S3`
+- `ESP32-C3`
 
-**nicht Kompatibel:**
+**Nicht kompatibel:**
 
-- `ESP32-H series`
+- `ESP32-H Serie`
 - `YB-ESP32-S3-ETH`
 - `WT32-ETH01`
 
 ## CC1101 433Mhz
 
-**kompatible und getestete Produkte:**
+**Kompatible und getestete Produkte:**
 
 - `EBYTE E07-M1101D-SMA V2.0`
 - `CC1101 433MHZ Green`
 
-eine Standard-SPI-GPIO-Konfiguration für den CC1101 und den ESP32 ist folgende:
+Standard SPI GPIO-Konfiguration:
 
-| CC1101-Signal| ESP-GPIO|
-|--------------|---------|
-| VCC          | --      |
-| GND          | --      |
-| GD0          | 21      |
-| GD2          | 22      |
-| SCK/CLK      | 18      |
-| MOSI         | 23      |
-| MISO         | 19      |
-| CS(N)        | 5       |
+| CC1101-Signal | ESP-GPIO |
+|---------------|----------|
+| VCC           | --       |
+| GND           | --       |
+| GD0           | 21       |
+| GD2           | 22       |
+| SCK/CLK       | 18       |
+| MOSI          | 23       |
+| MISO          | 19       |
+| CS(N)         | 5        |
 
 <img style="width: 500px;" src="./Doc/ESP32_CC1101_Steckplatine.png">
 
-<img style="width: 500px;" src="./Doc/ESP32_CC1101_Schaltplan.png"> 
+<img style="width: 500px;" src="./Doc/ESP32_CC1101_Schaltplan.png">
 
 <img style="width: 500px;" src="./Doc/hw_1.png">
 
@@ -163,30 +216,30 @@ Beispiel mit ESP32-Mini und CC1101
 
 <img style="width: 500px;" src="./Doc/hw_2.png">
 
-Beispiel für direkten Austausch mit ESP32-Mini und dem Custom Board von M. Maywald (vermutlich nicht mehr verfügbar)
+Beispiel fuer direkten Austausch mit ESP32-Mini und dem Custom Board von M. Maywald
 
 ## Optional: Ethernet Modul W5500
 
-Es ist auch möglich, ein W5500 Ethernet-Modul an das Board oder einen generischen ESP32 anzuschließen.
+Es ist moeglich, ein W5500 Ethernet-Modul anzuschliessen.
 
-**kompatible und getestete Produkte:**
+**Kompatible und getestete Produkte:**
 
 - `W5500` HanRun (HR911105A)
 - `W5500 Lite` HanRun (HR961160C)
 
 > [!IMPORTANT]
-> Das Anschlusskabel sollte so kurz wie möglich sein (ca. 10 cm).
+> Das Anschlusskabel sollte so kurz wie moeglich sein (ca. 10 cm).
 
-Beispiel für einen generischen ESP32-Mini (Standard SPI Port wird vom CC1101 verwendet)
+Beispiel fuer generischen ESP32-Mini (Standard-SPI wird vom CC1101 verwendet):
 
-| Signal| GPIO |
-|-------|------|
-| CLK   | 25   |
-| MOSI  | 26   |
-| MISO  | 27   |
-| CS    | 32   |
-| INT   | 33   |
-| RST   | 17   |
+| Signal | GPIO |
+|--------|------|
+| CLK    | 25   |
+| MOSI   | 26   |
+| MISO   | 27   |
+| CS     | 32   |
+| INT    | 33   |
+| RST    | 17   |
 
 -----
 
@@ -195,239 +248,127 @@ Beispiel für einen generischen ESP32-Mini (Standard SPI Port wird vom CC1101 ve
 ## Platform-IO
 
 Die Software wurde mit [Visual Studio Code](https://code.visualstudio.com) und dem [pioarduino-Plugin](https://github.com/pioarduino/pioarduino-vscode-ide) erstellt.  
-Nach der Installation der Software kannst du das Projekt von GitHub klonen oder als zip herunterladen und in PlatformIO öffnen.
-Dann noch den `upload_port` und die entsprechenden Einstellungen in `platformio.ini` an deinen USB-zu-Seriell-Adapter anpassen den Code auf den ESP hochladen.
+Das Projekt von GitHub klonen oder als ZIP herunterladen und in PlatformIO oeffnen.  
+Den `upload_port` in `platformio.ini` anpassen und den Code auf den ESP hochladen.
 
 > [!NOTE]
-> Python muss ebenfalls installiert sein, um das Projekt vollständig zu kompilieren. Der Ordner scripts enthält beispielsweise Skripte für die Erstellung der Webseiten, die beim Kompilieren des Projekts aufgerufen werden.
+> Python muss ebenfalls installiert sein, um das Projekt vollstaendig zu kompilieren.
 
 ## ESP-Flash-Tool
 
-In den Veröffentlichungen (Releases) befinden sich auch die Binärdatei der Software. Wenn du PlatformIO nicht verwenden willst, kannst du auch die Datei `esp32_jarolift_controller_flash_vx.x.x.bin` verwenden und direkt auf den ESP flashen. Diese bin-Datei ist bereits ein Fertig mit bootloader.bin, partitions.bin und der application.bin. Du kannst dieses Image auf den ESP an Adresse 0x00 flashen.  
+In den Releases befinden sich vorgefertigte Binaerdateien. Die Datei `ESP32-Jarolift-Controller_vX.X.X_espXX_flash.bin` enthaelt bereits Bootloader, Partitionstabelle und Firmware in einer Datei. Diese an Adresse `0x00` flashen.
 
-**Windows**  
-Es gibt verschiedene Tools, um Binärdateien auf den ESP zu übertragen.  
-Eines davon ist [espressif-flash-download-tool](https://www.espressif.com/en/support/download/other-tools)
+**Windows:**  
+[espressif-flash-download-tool](https://www.espressif.com/en/support/download/other-tools)
 
-**macOS/Linux**  
-Für Mac ist es schwierig, ein Tool mit einer grafischen Benutzeroberfläche zu finden, aber es kann einfach das esptool.py verwendet werden:
+**macOS/Linux:**
 
-1. Terminal öffnen
-2. esptool installieren: `pip install esptool`  
-3. optional den Installationspfad abfragen: `welches esptool.py`  
-4. Pfad setzen: `export PATH=„$PATH:/<Pfad>/esptool.py“` (<- ändere <Pfad> mit Ergebnis aus 3.)
-5. Gehe zu dem Pfad, in dem sich die bin-Datei befindet
-6. Device String abfragen: `ls /dev/tty* | grep usb` (verwende dies im nächsten Schritt für <UPLOAD-PORT>)
-7. Upload: `esptool.py -p <UPLOAD-PORT> write_flash 0x00 esp32_jarolift_controller_flash_vx.x.x.bin`  
+```bash
+pip install esptool
+esptool.py -p <PORT> write_flash 0x00 ESP32-Jarolift-Controller_vX.X.X_esp32_flash.bin
+```
 
 ## OTA-Updates
 
-### lokales Web OTA-Update
+### Lokales Web OTA-Update
 
-Eine Möglichkeit ist, die OTA-Update-Datei von der neuesten Version auf GitHub herunterzuladen.
-Nachdem man diese auf seinen Computer heruntergeladen hat, kann man ein Update mit dem eingebetteten WebUI OTA-Update durchführen.
-Die Update Funktion befindet sich auf der Registerkarte „Tools“ der WebUI.
-
-Hier kannst du einfach die Datei `esp32_jarolift_controller_ota_update_vx.x.x.bin` aus dem Release-Bereich auswählen und das Update starten.
+OTA-Datei aus dem neuesten Release herunterladen und in der WebUI unter **Tools -> OTA Update -> Firmware** hochladen.
 
 ![ota-1](Doc/webUI_ota.gif)
 
 ### GitHub OTA-Update
 
-Seit Version 1.4.0 ist es auch möglich, den Controller direkt in der WebUI zu aktualisieren, ohne vorher die .bin-Datei herunterzuladen.
-Wenn man auf die Versionsinfo unten links klickt, öffnet sich ein Dialog. Wenn eine neue Version verfügbar ist, kann man das Update hier direkt anstoßen. Es wird dann automatisch die neueste Version von github heruntergeladen und installiert!
+Seit Version 1.4.0 ist ein Update direkt aus der WebUI moeglich. Auf die Versionsanzeige unten links klicken.
 
 ![ota-2](Doc/github_ota.gif)
 
 ### PlatformIO OTA-Update
 
-Aber es ist auch möglich, die Software drahtlos mit Platformio herunterzuladen.
-Du musst nur die `upload_port` Einstellungen in der `platformio.ini` ändern.
-
-Es gibt zwei vordefinierte Optionen:
-
-- OPTION 1: direct cable upload
-- OPTION 2: wireless OTA Update
+Den `upload_port` in `platformio.ini` auf die IP-Adresse des ESP setzen.
 
 ## Setup Mode
 
-Es ist ein `Setup Mode` verfügbar. Der „Setup Mode“ wird aktiviert, wenn der ESP **5** mal neu gestartet wird.
-Nach jdem Neustart dürfen maximal bis zu 5 Sekunden vergehen.
+Der Setup-Mode wird aktiviert, wenn der ESP **5 mal** innerhalb von je 5 Sekunden neu gestartet wird.
 
-Beispiel: restart 1/5 - 2s warten - restart 2/5 - 2s warten - restart 3/5 - 2s warten - restart 4/5 - 2s warten - restart /5/5 => Setup-Mode
-
-Der `Setup-Mode` wird auch aktiviert, wenn kein gültiges WLAN und keine gültige ETH-Verbindung konfiguriert ist.
-
-Wenn der ESP in den „Setup Mode“ geht, erstellt er automatisch einen eigenen Netzwerk Accesspoint mit der ssid
-📶 `"ESP32_Jarolift"`  
-Nachdem du mit diesem Netzwerk verbunden bist, kannst du die WebUI übernachfolgende Adresse öffnen  
-**http://192.168.4.1**
+Im Setup-Mode erstellt der ESP einen eigenen WLAN-Accesspoint:  
+WLAN: `"ESP32_Jarolift"` – dann WebUI oeffnen unter **http://192.168.4.1**
 
 ## Konfiguration
 
-Hier können alle Konfigurationen vorgenommen werden, die zu der Heizungsanlage und der Infrastruktur passen.
-
-- **WiFi**  
-Gib im Feld „WiFi“ deine WLAN Anmeldedaten ein, um den ESP mit Ihrem Netzwerk zu verbinden.
-
-- **Ethernet W5500**  
-Verwende optional die Ethernet-Verbindung auf Basis des W5500, um den ESP mit dem Netzwerk zu verbinden.
-
-- **Authentifizierung**  
-Hier kann optional die Authentifizierungsfunktion aktiviert werden und Benutzer und Passwort konfiguriert werden.
-
-- **NTP-Server**  
-Der ESP kann sich mit einem NTP-Server verbinden, um die richtigen Zeitinformationen zu erhalten.
-Die voreingestellte Zeitzone sollte passen, wenn du dich in Deutschland befindest. Andernfalls können diese manuell geändert werden.
-
-- **MQTT**  
-hier können Sie die MQTT-Kommunikation aktivieren und obligatorische Parameter eingeben.  
-
-- **GPIO**  
-Hier kann man die GPIO konfigurieren, um den CC1101 mit dem ESP32 zu verbinden
-
-- **Jarolift**  
-Hier müssen bestimmte Jarolift-spezifische Protokolleinstellungen vorgenommen werden
-
-- **Shutter**  
-hier können die einzelnen Rollläden mit individuellen Namen konfiguriert werden
-
-- **Group**  
-Hier können wahlweise Rollladengruppen definiert werden
-
-- **Fernebdienungen**
-  Hier können vorhandenen Jarolift-Fernbedienungen registrieren.
-  Dies kann hilfreich sein, wenn Befehle dieser Fernbedienungen erkennen und darauf reagieren möchte.
-
-  Man kann der Fernbedienung einen beliebigen Namen zuweisen. Dieser wird auch in der MQTT-Nachricht ausgegeben.
-
-  Für die Seriennummer müssen die oberen 6 Ziffern der 8-stelligen Seriennummer eingegeben werden. Die Seriennummer kann im Logbuch gefunden werden, indem die Fernbedienung in der Nähe des Controllers gedrückt wird. Im Logbuch sollte dann eine Meldung wie diese erscheinen:  
-  `I (220364) JARO: received remote signal | serial: 0c7c00 | ch: 3 | cmd: 0x8, | rssi: -96 dbm`  
-  
-  Mit Hilfe der Bitmaske und dem dahinter liegenden Dialog kann man dann wie bei den Gruppen festlegen, welche Rollläden dieser Fernbedienung zugeordnet sind. 
-  Der Status dieser Rollläden wird dann in Abhängigkeit vom empfangenen Signal aktualisiert.
-  Das bedeutet, dass der Status der Rollläden auch dann aktualisiert werden kann, wenn sie nicht über den ESP-Controller, sondern über die Original-Fernbedienung gesteuert werden.
-
-  Bitte beachten, dass dies nicht zu 100% zuverlässig ist und ggf. nicht jedes Signal der Fernbedienung erkannt wird.
-
-- **Language**  
-Es sind zwei Sprachen verfügbar. Wählen deine bevorzugte Sprache.
+- **WiFi** – WLAN-Zugangsdaten eingeben
+- **Ethernet W5500** – optional Ethernet statt WLAN
+- **Authentifizierung** – Anmeldung mit Benutzername und Passwort aktivieren
+- **NTP-Server** – Zeitsynchronisation fuer die Timer-Funktion
+- **MQTT** – MQTT aktivieren und Broker-Einstellungen eingeben
+- **GPIO** – SPI-Pins fuer den CC1101 konfigurieren
+- **Jarolift** – Protokoll-spezifische Einstellungen (Master Keys, Serial, Device Counter)
+- **Shutter** – Jeden der 16 Kanaele benennen und aktivieren
+- **Group** – Rollladengruppen definieren
+- **Fernbedienungen** – Vorhandene Jarolift-Fernbedienungen per Seriennummer registrieren
+- **Language** – Deutsch oder Englisch (wirkt sich auf WebUI und MQTT-Nachrichten aus)
 
 > [!NOTE]
-> Alle Einstellungen werden automatisch gespeichert, wenn Änderungen vorgenommen werden.
+> Alle Einstellungen werden automatisch gespeichert.
 
 > [!IMPORTANT]
-> Changes to GPIO or Jarolift settings require a restart!
+> Aenderungen an GPIO- oder Jarolift-Einstellungen erfordern einen Neustart.
 
-![weubui-settings](Doc/webUI_settings.png)
+![webui-settings](Doc/webUI_settings.png)
 
 ## Filemanager
 
-Es gibt es auch einen eingebauten Dateimanager zum Öffnen (anzeigen), Herunterladen (exportieren) und Hochladen (importieren) der Konfigurationsdatei.
-Die Konfiguration wird in der Datei ``config.json`` gespeichert. Zur Sicherung und Wiederherstellung der Konfiguration kannst du diese Datei herunterladen und hochladen.
+Der eingebaute Dateimanager ermoeglicht Download und Upload der `config.json` fuer Backup und Wiederherstellung.
 
-![filemanager](/Doc/webUI_tools.png)
+![filemanager](Doc/webUI_tools.png)
 
-## Anlernen von Rolläden
+## Anlernen von Rolllaeden
 
-Es gibt grundsätzlich mehrere Möglichkeiten um einen Rolladen anzulernen.
-Es existieren die gleichen Möglichkeiten wie bei der Nutzung der original Fernbedienungen.
+### Anlernen per Taste am Motor
 
-### Anlernen durch drücken der Anlerntaste am Motor
-
-Jeder TDEF Motor hat eine Taste zum anlernen von neuen Fernbedienungen.
-Drückt man diese Taste, bestätgt der Motor den Anlernvorgang mit einem vibrieren.
+Jeder TDEF-Motor hat eine Programmiertaste. Diese druecken, dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI druecken.
 
 > [!TIP]
-> Wenn man an die Taste nicht ran kommt, kann man den Motor auch für ein paar Sekunden Stromlos schalten. Z.B. in dem man die Sicherung kurz raus macht.
+> Wenn die Taste nicht erreichbar ist, den Motor kurz stromlos schalten (z.B. Sicherung raus).
 
-Jetzt innerhalb von 5 Sekunden den entsprechenden "Lern-Button" im WebUI in den Settings bei dem jeweiligen Rolladen drücken.
-Wenn der Rolladen erfolgreich eingelernt wurde, vibriert der Motor erneut.
+### Anlernen durch Kopieren einer vorhandenen Fernbedienung
 
-### Anlernen durch Kopieren eines bestehenden Funkcodes
+AUF- und AB-Taste gleichzeitig auf der vorhandenen Fernbedienung druecken, dann 8x STOP. Motor vibriert zur Bestaetigung. Dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI druecken.
 
-Alternativ kann man auch eine bereits eingelernte Fernbedienung nutzen und diese "Kopieren".
-Dazu auf dem bereits eingelernten Sender die AUF- und AB-Taste gleichzeitig. Danach, auf diesem Sender, die STOP-Taste
-acht mal drücken. Der Motor wird zur Bestätigung kurz vibrieren.
+## Migration
 
-Jetzt innerhalb von 5 Sekunden den entsprechenden "Lern-Button" im WebUI in den Settings bei dem jeweiligen Rolladen drücken.
-Wenn der Rolladen erfolgreich eingelernt wurde, vibriert der Motor erneut.
-
-## Migration von madmartin/Jarolift_MQTT
-
-Es ist möglich, von einer vorherigen Version von [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT) zu diesem Projekt zu migrieren.
-
-#### Ein funktionierendes Setup für dieses Projekt herstellen
-
-- eine funktionierende Version dieses Projekts zum Laufen zu bringen
-- die richtigen GPIO-Einstellungen für den CC1101 setzen
-- die Master Keys setzen (entweder hat man die oder man findet sie)
-- den Log-Level im Logger der WebUI auf „Debug“ setzen
-
-#### Ermitteln Sie die richtige Seriennummer
-
-- Führe einen Shutter HOCH Befehl des „alten“ Setups `(madmartin/Jarolift_MQTT)` für **Kanal 0!** aus.
-- Du solltest nun eine Debug-Meldung dieses Befehls im Logger der WebUI sehen.  
-Sie enthält eine Meldung mit   `I (220364) JARO: received remote signal | serial: 0c7c00 | ch: 3 | cmd: 0x8, | rssi: -96 dbm` 
-Dies sollte die gleiche Seriennummer sein, die in der WebUI des „alten“ Setups konfiguriert wurde, aber jetzt sind wir sicher, dass wir die richtige haben.
-- Setze diese Seriennummer in der WebUI dieses Projekts in den Einstellungen.
-
-
-#### Den richtigen Gerätezähler finden
-
-- den aktuellen Gerätezähler der „alten“ Konfiguration auf der System-Seite der WebUI ablesen.
-- den gleichen Wert für den Gerätezähler in den Einstellungen dieses Projekts einstellen.
-
-
-#### Die Rollläden definieren
-
-- Definiere die gleichen Rolläden in der gleichen Reihenfolge wie in der „alten“ Einstellung und aktiviere diese.
-
-fertig!  
-Starte nun den ESP neu und teste.  
-Prüfe nach dem Neustart zunächst, ob der Gerätezähler korrekt aus dem EEPROM gelesen wurde. Nur wenn dies der Fall ist, fahre mit dem Test fort.
-Wenn alles richtig gemacht wurde, sollten alle Rollläden wie vorher funktionieren. Wenn nicht, ist eine Einstellung falsch oder du hast zuletzt nicht die neueste Version von `(madmartin/Jarolift_MQTT)` verwendet. In diesem Fall würde ich es vorziehen, eine neue Seriennummer zu setzen, den Gerätezähler zurückzusetzen und die Rolläden neu einzulernen.
+Migration von [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT) ist moeglich. Master Keys, Seriennummer und Device Counter aus der alten Konfiguration uebernehmen.
 
 -----
 
 # WebUI
 
-Das WebUI ist responsive und bietet auch eine Layout für Mobile Geräte
+Die WebUI ist responsiv und bietet sowohl Desktop- als auch Mobile-Layout.
 
-![weubui_dash](Doc/webUI_1.png)
-(Desktop Version)
+![webui_dash](Doc/webUI_1.png)
 
-<img style="display: inline;
-  margin-right: 50px;
-  width: 200px;" src="./Doc/webUI_mobile_1.png">
-<img style="display: inline;
-  margin-right: 50px;
-  width: 200px;" src="./Doc/webUI_mobile_2.png">
+<img style="display:inline;margin-right:50px;width:200px;" src="./Doc/webUI_mobile_1.png">
+<img style="display:inline;margin-right:50px;width:200px;" src="./Doc/webUI_mobile_2.png">
 
-(Mobile Version)
+## Kanaele
 
-## Channels
+Jeder aktivierte Rollladen kann mit Hoch / Stopp / Runter / Schatten bedient werden.  
+Mit kalibrierter Positionssteuerung steht zusaetzlich ein **Positionsschieberegler (0–100%)** zur Verfuegung.
 
-Nachdem die Rolläden in den Einstellungen konfiguriert und aktiviert wurden, können diese auch direkt im WebUI bedient werden.
+![webUI_shutter](Doc/webUI_shutter.png)
 
-![webUI_shutter](/Doc/webUI_shutter.png)
+## Gruppen
 
-## Groups
+Konfigurierte Gruppen koennen genauso bedient werden wie einzelne Rolllaeden.
 
-Die in den Einstellungen konfigurierten Gruppen können wie die einzelnen Rollläden auch direkt im WebUI bedient werden.
-
-![webUI_groups](/Doc/webUI_groups.png)
+![webUI_groups](Doc/webUI_groups.png)
 
 ## Timer
 
-Die Timer ermöglicht die automatische Steuerung einzelner Rollläden oder eine Auswahl mehrerer Rollläden als Gruppe.
-Als Auslöser kann ein fester Zeitpunkt oder Sonnenaufgang bzw. Sonnenuntergang mit optionalem Zeitversatz vorgegeben werden.
+Automatische Steuerung mit fester Uhrzeit, Sonnenaufgang oder Sonnenuntergang als Ausloeser.
 
-![webUI_timer](/Doc/webUI_timer.png)
+![webUI_timer](Doc/webUI_timer.png)
 
-Die Auswahl von Rollläden wird durch einen zusätzlichen Dialog unterstützt. Dort werden alle konfigurierten und aktivierten Rollläden angezeigt. Diese können dort ausgewählt werden und die benötigte Bitmaske wird dann automatisch berechnet.
-
-<img style="width: 444px;" src="./Doc/webUI_bitmask_wiz.png">
+<img style="width:444px;" src="./Doc/webUI_bitmask_wiz.png">
 
 -----
 
@@ -435,184 +376,117 @@ Die Auswahl von Rollläden wird durch einen zusätzlichen Dialog unterstützt. D
 
 ## Kommandos
 
-### Rolläden
-
-Zur Steuerung der Rollläden können die folgenden mqtt-Befehle verwendet werden.
-{UP, OPEN, 0} bedeutet, dass man einen der aufgeführten Payload-Befehle verwenden kann.
+### Rolllaeden
 
 ```text
-command:    Neustart ESP
-topic:      ../cmd/restart
-payload:    none
+Befehl:     Rollladen hoch
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {UP, OPEN, 0}
 
-command:    Rolladen hoch
-topic:      ../cmd/shutter/1 ... cmd/shutter/16
-payload:    {UP, OPEN, 0}
+Befehl:     Rollladen runter
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {DOWN, CLOSE, 1}
 
-command:    Rolladen runter
-topic:      ../cmd/shutter/1 ... cmd/shutter/16
-payload:    {DOWN, CLOSE, 1}
+Befehl:     Rollladen stopp
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {STOP, 2}
 
-command:    Rolladen stopp
-topic:      ../cmd/shutter/1 ... cmd/shutter/16
-payload:    {STOP, 2}
+Befehl:     Rollladen Schatten
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {SHADE, 3}
 
-command:    Rolladen Schatten
-topic:      ../cmd/shutter/1 ... cmd/shutter/16
-payload:    {SHADE, 3}
-
+Befehl:     Position setzen (0-100%)  <- neu in diesem Fork
+Topic:      ../cmd/shutter/1 ... cmd/shutter/16
+Payload:    {0 ... 100}
 ```
 
-### vordefinierte Gruppen
-
-Zur Steuerung der Rollläden über eine vordefinierte Gruppe, können die folgenden mqtt-Befehle verwendet werden.
-{UP, OPEN, 0} bedeutet, dass man einen der aufgeführten Payload-Befehle verwenden kann.
+### Vordefinierte Gruppen
 
 ```text
-
-command:    Gruppe hoch
-topic:      ../cmd/group/1 ... cmd/group/6
-payload:    {UP, OPEN, 0}
-
-command:    Gruppe runter
-topic:      ../cmd/group/1 ... cmd/group/6
-payload:    {DOWN, CLOSE, 1}
-
-command:    Gruppe stopp
-topic:      ../cmd/group/1 ... cmd/group/6
-payload:    {STOP, 2}
-
-command:    Gruppe Schatten
-topic:      ../cmd/group/1 ... cmd/group/6
-payload:    {SHADE, 3}
-
+Befehl:     Gruppe hoch/runter/stopp/schatten
+Topic:      ../cmd/group/1 ... cmd/group/6
+Payload:    {UP/DOWN/STOP/SHADE}
 ```
 
 ### Gruppe mit Bitmaske
 
-Man kann auch einen generischen Gruppenbefehl verwenden und die Bitmaske angeben, um die Rollläden direkt auszuwählen.  
-Die Bitmaske ist eine 16-Bit-Zahl, wobei das niedrigstwertige Bit (rechts) für Kanal 1 steht.  
-Ein gesetztes Bit bedeutet, dass der Kanal zu dieser Gruppe gehört.  
-
-**Beispiel**: `0000000000010101` bedeutet, dass die Kanäle 1, 3 und 5 zu dieser Gruppe gehören.
-
-Als Nutzdaten können Sie drei verschiedene Formate verwenden, um die gleiche Bitmaske darzustellen:
-
-- **Binary**: `0b0000000000010101`
-- **Hex**: `0x15`
-- **Decimal**: `21`
-
 ```text
-
-command:    Gruppe hoch
-topic:      ../cmd/group/up
-payload:    {0b0000000000010101, 0x15, 21}
-
-command:    Gruppe runter
-topic:      ../cmd/group/down
-payload:    {0b0000000000010101, 0x15, 21}
-
-command:    Gruppe stopp
-topic:      ../cmd/group/stop
-payload:    {0b0000000000010101, 0x15, 21}
-
-command:    Gruppe Schatten
-topic:      ../cmd/group/shade
-payload:    {0b0000000000010101, 0x15, 21}
-
+Befehl:     Gruppe hoch/runter/stopp/schatten per Bitmaske
+Topic:      ../cmd/group/up  (oder /down, /stop, /shade)
+Payload:    {0b0000000000010101, 0x15, 21}
 ```
+
+`0000000000010101` = Kanaele 1, 3 und 5.
 
 ## Status
 
-## Rolladen-Status
-
-Der Controller sendet auch einen Status, **basierend auf den empfangenen Kommandos.**  
+```text
+Status:     Position (0-100%)
+Topic:      ../status/shutter/1 ... status/shutter/16
+Payload:    {0 ... 100}
+            0   = vollstaendig offen
+            100 = vollstaendig geschlossen
+```
 
 > [!IMPORTANT]
-> Aber es ist wichtig zu beachten, dass dieser Status nicht dem tatsächlichen Zustand des Rollladens entspricht, denn leider sendet der Rolladen selbst keinen Status den man dazu auswerten könnte. Wenn also der Rolladen z.B. über die originale Fernbedienung bedient wird oder über eine vor Ort Bedienung, oder während der Bewegung gestoppt wird, dann stimmt dieser Status hier nicht mehr!
+> Mit aktiver Positionssteuerung gibt der Status die **geschaetzte Position** auf Basis der kalibrierten Fahrzeit an – keine Rueckmeldung vom Motor selbst. Wird der Rollladen ueber die Original-Fernbedienung bedient, driftet die Positionsschaetzung, bis der Rollladen wieder eine bekannte Endposition (0% oder 100%) anfaehrt.
 
-```text
-
-Status:     Rolladen OFFEN
-topic:      ../status/shutter/1 ... status/shutter/16
-payload:    {0}
-
-Status:     Rolladen GESCHLOSSEN
-topic:      ../status/shutter/1 ... status/shutter/16
-payload:    {100}
-
-Status:     Rolladen SCHATTEN
-topic:      ../status/shutter/1 ... status/shutter/16
-payload:    {90}
-```
-
-### Remotes (Fernbedienungen)
-
-Sind in den Einstellungen auch originale Fernbedienungen über die Seriennummer hinterlegt, dann können auch Signale dieser Fernbedienungen erfasst und per MQTT ausgegeben werden. Die Information darüber, welcher Rollladen gesteuert wird, ist in den beiden Variablen `chBin` und `chDec` zu sehen. chBin“ zeigt den verwendeten Rollladen als 16-Bit-Binärwert an, während ‚chDec‘ dieselbe Information zur einfacheren Automatisierung als Dezimalwert anzeigt.
+### Fernbedienungen
 
 ```json
-topic:      "../status/remote/<serial-number>"
-payload:    {
-              "name":   "<alias-name>", 
-              "cmd":    "<UP, DOWN, STOP, SHADE>",
-              "chBin":  "<channel-binary>",
-              "chDec":  "<channel-decimal>"
-            }
-```
-
-
-
-> [!NOTE]
-> < ../ > ist der Platzhalter für das MQTT-Topic, das in den Einstellungen angegeben ist.
-
-## zusätzliche Informationen (nur lesen)
-
-Statusinformationen über WiFi:
-
-```text
-Topic: ESP32-Jarolift-Controller/wifi = {  
-    "status":"online",  
-    "rssi":"-50",  
-    "signal":"90",  
-    "ip":"192.168.1.1",  
-    "date-time":"01.01.2022 - 10:20:30"  
-}
+Topic:   "../status/remote/<Seriennummer>"
+Payload: {
+           "name":  "<Aliasname>",
+           "cmd":   "<UP, DOWN, STOP, SHADE>",
+           "chBin": "<Kanal-Binaer>",
+           "chDec": "<Kanal-Dezimal>"
+         }
 ```
 
 ## Home Assistant
 
-MQTT Discovery für Home Assistant macht es einfach, alle Werte in Home Assistant zu erhalten.
-Die konfigurierten Rollläden werden automatisch als mqtt-Gerät in Home Assistant angezeigt, wenn HomeAssistant aktiviert ist.
+MQTT Auto Discovery registriert alle aktivierten Rolllaeden automatisch als **Cover-Entitaeten** in Home Assistant.
 
-siehe auch die: [offizielle Dokumentation](https://www.home-assistant.io/integrations/mqtt/#discovery-messages)
+- **Positionsschieberegler** – Rolllaeden auf beliebige Position 0–100% fahren
+- **Schatten-Button** – separater Button pro Rollladen fuer den Schatten-Befehl
+- **Statuslogik** – Position >= 75% wird als geschlossen angezeigt, darunter als geoeffnet
 
-<img src="Doc/webUI_ha2.png" alt="mqtt_ha1" width="75%">
+<img src="Doc/webUI_ha2.png" alt="Home Assistant Integration" width="75%">
 
-In den mqtt-Einstellungen können die Funktion zur Erkennung aktiviert sowie das mqtt-Topic und der Gerätename für den Home Assistant festgelegt werden.
-
-<img src="Doc/webUI_ha1.png" alt="mqtt_ha1" width="50%">
+<img src="Doc/webUI_ha1.png" alt="MQTT Einstellungen" width="50%">
 
 -----
 
 # Optionale Kommunikation
 
-Zusätzlich zu mqtt gibt es weitere Kommunikationsmöglichkeiten.
-
 ## WebUI-Logger
 
-Außerdem gibt es eine Log-Funktion, mit der je nach Filter verschiedene Meldungen aufgezeichnet und über die WebUI angezeigt werden können. Dies kann für das eigene Debugging und auch für die Weiterentwicklung der Software nützlich sein.
+Log-Funktion mit konfigurierbaren Filterstufen, in der WebUI angezeigt.
 
 <img src="./Doc/webUI_Logger.png" width="75%">
 
 ## Telnet
 
-Neben der WebUI und MQTT gibt es auch eine Telnet-Schnittstelle zur Kommunikation mit dem ESP.
-Die Schnittstelle bietet mehrere Befehle, um Informationen auszulesen und Befehle zu senden.
-Eine Übersicht über die Befehle kann mit dem Befehl „help“ aufgerufen werden.
-Um eine Verbindung herzustellen, kann eine einfache Telnet-Verbindung über die entsprechende IP-Adresse des ESP gestartet werden.
+Telnet-Schnittstelle fuer Befehle und Diagnose:
 
-Beispiel:
-
-`> telnet 192.168.178.193`
+```
+telnet 192.168.178.193
+```
 
 <img src="./Doc/telnet.png" width="75%">
+
+-----
+
+# Danksagungen
+
+- Originalprojekt: [dewenni/ESP32-Jarolift-Controller](https://github.com/dewenni/ESP32-Jarolift-Controller)
+- Urspruenglicher Steuercode: Steffen Hille (2017) – [Projekt-Homepage](http://www.bastelbudenbuben.de/2017/04/25/protokollanalyse-von-jarolift-tdef-motoren/)
+- Basiert auf Ideen von: [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT)
+- Positionssteuerung: entwickelt mit [Claude AI](https://claude.ai) (Anthropic)
+
+-----
+
+> Experimentelle Version. Verwendung auf eigene Gefahr. Nur fuer privaten/schulischen Gebrauch.  
+> Keeloq-Algorithmus ist nur fuer TI-Mikrocontroller lizenziert.  
+> Dieses Projekt ist nicht mit dem Hersteller der Jarolift-Komponenten verbunden.  
+> Jarolift ist ein Warenzeichen der Schoeneberger Rolladenfabrik GmbH & Co. KG.
