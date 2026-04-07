@@ -205,6 +205,15 @@ void updateSystemInfoElementsStatic() {
     }
   }
 
+  // Remote serial as hex string (so the hex input field shows the correct value)
+  for (int i = 0; i < 16; i++) {
+    char serialId[32];
+    char serialHex[8];
+    snprintf(serialId, sizeof(serialId), "cfg_jaro_remote_serial_%d", i);
+    snprintf(serialHex, sizeof(serialHex), "%06lx", config.jaro.remote_serial[i]);
+    webUI.addJson(jsonDoc, serialId, serialHex);
+  }
+
   webUI.wsUpdateWebJSON(jsonDoc);
 }
 

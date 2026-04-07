@@ -3,7 +3,7 @@
 #include <github.h>
 #include <message.h>
 
-#define GITHUB_OWNER "dewenni"
+#define GITHUB_OWNER "Banabas"
 #define GITHUB_REPO "ESP32-Jarolift-Controller"
 
 static const char *TAG = "GITHUB"; // LOG TAG
@@ -30,9 +30,8 @@ bool isChipSeriesMatch(const char *assetName, const char *espSeries) {
   }
   formattedEspSeries[j] = '\0';
 
-  // check if the asset name contains the chip series
-  size_t len = strlen(formattedEspSeries);
-  return (strncasecmp(assetName, formattedEspSeries, len) == 0 && assetName[len] == '_');
+  // check if the asset name contains the chip series anywhere (not just at start)
+  return (strcasestr(assetName, formattedEspSeries) != NULL);
 }
 
 /**

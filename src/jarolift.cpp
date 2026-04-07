@@ -103,8 +103,13 @@ void mqttSendRemote(uint32_t serial, int8_t function, uint16_t channel) {
 
   // unknown as default
   const char *remoteName = "unknown";
+  ESP_LOGD(TAG, "remote lookup: received serial=0x%06lx (>> 8)", serial >> 8);
   for (int i = 0; i < 16; i++) {
-    if (config.jaro.remote_enable[i] && (serial >> 8 == config.jaro.remote_serial[i])) {
+    if (!config.jaro.remote_enable[i]) continue;
+    ESP_LOGD(TAG, "  slot %d: enabled, stored serial=0x%06lx, match=%s",
+             i, config.jaro.remote_serial[i],
+             (serial >> 8 == config.jaro.remote_serial[i]) ? "YES" : "no");
+    if (serial >> 8 == config.jaro.remote_serial[i]) {
       remoteName = config.jaro.remote_name[i];
 
       // check if this remote is registered for one or more shutter
@@ -141,7 +146,7 @@ void mqttSendRemote(uint32_t serial, int8_t function, uint16_t channel) {
 
   mqttPublish(topic, sendremoteJSON, false);
 
-  ESP_LOGI(TAG, "received remote signal | serial: 0x%08lx | cmd: %s, | channel: %s", serial, fun, chBIN);
+  ESP_LOGI(TAG, "received remote signal | name: %s | serial: 0x%08lx | cmd: %s | channel: %s", remoteName, serial, fun, chBIN);
 }
 
 /**
