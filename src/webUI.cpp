@@ -23,7 +23,7 @@ static bool webInitDone = false;
 static const size_t BUFFER_SIZE = 512;
 static bool onLoadRequest = false;
 
-static char webCallbackElementID[32];
+static char webCallbackElementID[48];
 static char webCallbackValue[256];
 static bool webCallbackAvailable = false;
 

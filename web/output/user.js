@@ -114,41 +114,9 @@ const user_translations = {
     de: "Runterfahren",
     en: "down",
   },
-  cmd_shade: {
-    de: "Schatten",
-    en: "shade",
-  },
-  timer_type: {
-    de: "Zeitgeber",
-    en: "Time-Source",
-  },
   time: {
     de: "Uhrzeit",
     en: "Time",
-  },
-  time_HH_MM: {
-    de: "Zeit (HH:MM)",
-    en: "Time (HH:MM)",
-  },
-  use_min_time: {
-    de: "Frühestens um (HH:MM)",
-    en: "Not earlier than (HH:MM)",
-  },
-  use_max_time: {
-    de: "Spätestes um (HH:MM)",
-    en: "Not later than (HH:MM)",
-  },
-  offset_desc: {
-    de: "Offset in Minuten (z. B. -15 oder +20)",
-    en: "Offset in Minutens (e.g. -15 oder +20)",
-  },
-  command: {
-    de: "Befehl",
-    en: "Command",
-  },
-  weekdays: {
-    de: "Wochentage",
-    en: "weekdays",
   },
   day_mo: {
     de: "Mo",
@@ -251,15 +219,15 @@ const user_translations = {
     en: "Travel Time Calibration",
   },
   calib_step1: {
-    de: "Schritt 1: Rollladen vollstaendig oeffnen (Taste oben druecken bis Anschlag), dann auf Start klicken.",
+    de: "Schritt 1: Rollladen vollständig öffnen (Taste oben drücken bis Anschlag), dann auf Start klicken.",
     en: "Step 1: Fully open the shutter (press Up until end stop), then click Start.",
   },
   calib_step2: {
-    de: "Schritt 2: Rollladen faehrt runter. Warten bis vollstaendig geschlossen, dann Stopp druecken.",
+    de: "Schritt 2: Rollladen fährt runter. Warten bis vollständig geschlossen, dann Stopp drücken.",
     en: "Step 2: Shutter moves down. Wait until fully closed, then press Stop.",
   },
   calib_step3: {
-    de: "Schritt 3: Rollladen faehrt hoch. Warten bis vollstaendig geoeffnet, dann Stopp druecken.",
+    de: "Schritt 3: Rollladen fährt hoch. Warten bis vollständig geöffnet, dann Stopp drücken.",
     en: "Step 3: Shutter moves up. Wait until fully open, then press Stop.",
   },
   calib_start: {
@@ -271,7 +239,7 @@ const user_translations = {
     en: "Stop - Shutter closed",
   },
   calib_shutter_hint: {
-    de: "Kanal gemaess Auswahl oben",
+    de: "Kanal gemäß Auswahl oben",
     en: "Channel as selected above",
   },
   calib_step4: {
@@ -281,6 +249,56 @@ const user_translations = {
   calib_finish_up: {
     de: "Stopp - Rollladen oben",
     en: "Stop - Shutter open",
+  },
+
+  astro_real: {
+    de: "REAL (Sonnenauf/-untergang)",
+    en: "REAL (Sunrise/Sunset)",
+  },
+  astro_civil: {
+    de: "CIVIL (bürgerliche Dämmerung)",
+    en: "CIVIL (Civil Twilight)",
+  },
+  astro_nautic: {
+    de: "NAUTIC (nautische Dämmerung)",
+    en: "NAUTIC (Nautical Twilight)",
+  },
+  astro_astronomic: {
+    de: "ASTRONOMIC (astronomische Dämmerung)",
+    en: "ASTRONOMIC (Astronomical Twilight)",
+  },
+  astro_horizon: {
+    de: "HORIZON (eigener Winkel)",
+    en: "HORIZON (custom angle)",
+  },
+
+  timer_shutters: {
+    de: "Kanäle",
+    en: "Channels",
+  },
+  timer_groups: {
+    de: "Gruppen",
+    en: "Groups",
+  },
+  offset_min: {
+    de: "Minuten Versatz",
+    en: "minutes offset",
+  },
+  weekend_override: {
+    de: "Wochenende (Sa+So) andere Zeit",
+    en: "Weekend (Sa+Su) different time",
+  },
+  timer_overview: {
+    de: "Timer Übersicht",
+    en: "Timer Overview",
+  },
+  weekdays: {
+    de: "Wochentage",
+    en: "Weekdays",
+  },
+  no_timer_active: {
+    de: "Keine aktiven Timer",
+    en: "No active timers",
   },
 };
 

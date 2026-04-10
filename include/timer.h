@@ -7,4 +7,6 @@
 #define TYPE_SUNDOWN 2
 
 void timerCyclic();
-void getSunriseOrSunset(uint8_t type, int16_t offset, float latitude, float longitude, uint8_t &hour, uint8_t &minute);
+void getSunriseOrSunset(uint8_t type, int16_t offset, float latitude, float longitude,
+                        uint8_t &hour, uint8_t &minute,
+                        uint8_t astro_mode = 0, int8_t horizon_value = 0);

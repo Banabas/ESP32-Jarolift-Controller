@@ -1,35 +1,24 @@
-# v1.10.1-beta
+# v1.10.3-beta
 
 ## what's new
 
-### Service Commands
+This is a bugfix release for the Timer WebUI.
 
-there is a new WebUI Page with service commands like:
+### Timer – Overview table now always populated correctly
 
-- set shade
-- set/delete upper end point
-- set/delete lower end point
+The timer overview table (bottom of the Timer tab) was not filled after page load.
+Two issues were fixed:
 
-### remote signals (update)
+1. A JavaScript `ReferenceError` (`astroKeys` was used instead of the correct global `astroKeyNames`) caused the overview to silently fail whenever a timer using sunrise/sunset mode was active.
+2. `buildTimerOverview()` is now called at the end of `initTimerUI()`, which runs after the server data has been received via WebSocket. Previously it ran on a fixed 3-second timeout which was independent of data availability.
 
-The MQTT message for remote signals has been updated. The information about which shutter is controlled can be seen in the two variables `chBin` and `chDec`. `chBin` shows the used shutter as a 16-bit binary value, while `chDec` shows the same information as a decimal value for easier automation.
+### Timer – Weekend override input now opens correctly
 
-```json
-topic:      ../status/remote/<serial-number>
-payload:    {
-              "name":   "<alias-name>", 
-              "cmd":    "<UP, DOWN, STOP, SHADE>",
-              "chBin":  "<channel-binary>",
-              "chDec":  "<channel-decimal>"
-            }
-```
+The "Weekend override" section (Sa+So) inside each timer event block did not expand when the checkbox was ticked.
+The toggle function was looking for an element ID with a double `_we` suffix (`_we_we_block`) instead of the correct ID (`_we_block`).
 
 ## changelog
 
-- [FIX] bugfix github ota asset check #40, #45
-- [FEATURE] service page with new service commands
-- [FEATURE] new "unlearn" command in shutter settings
-- [CHANGE] "set shade" was moved from settings to service page
-- [CHANGE] MQTT messages for remote signals have been updated
-- [CHANGE] internal redesign in JaroliftController-Lib
-- [UPDATE] dewenni/EspWebUI @ 0.0.4
+- [FIX] Timer overview: `astroKeys` renamed to `astroKeyNames` – fixes ReferenceError for astro-mode timers #timer
+- [FIX] Timer overview: `buildTimerOverview()` now called after server data load instead of fixed timeout
+- [FIX] Timer weekend override: corrected element ID lookup in `toggleWeekend()` (`_we_block` instead of `_we_we_block`)

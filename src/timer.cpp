@@ -3,232 +3,165 @@
 #include <config.h>
 #include <jarolift.h>
 #include <message.h>
-
 #include <timer.h>
+#include <shutter_position.h>
 
-#define CMD_UP 0
-#define CMD_DOWN 1
-#define CMD_SHADE 2
+static int   lastProcessedTime = -1;
+static const char *TAG = "TIMER";
 
-int lastProcessedTime = -1;       // last processed time
-static const char *TAG = "TIMER"; // LOG TAG
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/**
- * *******************************************************************
- * @brief   Check if a day is enabled in the timer configuration.
- * @param   timer: Timer configuration.
- * @param   day: Day of the week (0-6).
- * @return  true if the day is enabled, false otherwise.
- * *******************************************************************
- */
-bool isDayEnabled(const s_cfg_timer &timer, int day) {
+bool isDayEnabled(const s_channel_timer &ct, int day) {
+  // Wochenende: wenn weekend_enable aktiv, Sa/So immer erlauben
+  bool isWeekendDay = (day == 0 || day == 6);
+  if (isWeekendDay && (ct.up.weekend_enable || ct.down.weekend_enable)) return true;
   switch (day) {
-  case 0:
-    return timer.sunday;
-  case 1:
-    return timer.monday;
-  case 2:
-    return timer.tuesday;
-  case 3:
-    return timer.wednesday;
-  case 4:
-    return timer.thursday;
-  case 5:
-    return timer.friday;
-  case 6:
-    return timer.saturday;
-  default:
-    return false;
+    case 0: return ct.sunday;
+    case 1: return ct.monday;
+    case 2: return ct.tuesday;
+    case 3: return ct.wednesday;
+    case 4: return ct.thursday;
+    case 5: return ct.friday;
+    case 6: return ct.saturday;
+    default: return false;
   }
 }
 
-/**
- * *******************************************************************
- * @brief   Execute a command from a timer.
- * @param   timer: Timer configuration.
- * @param   number: Timer number (0-5).
- * @return  none
- * *******************************************************************
- */
-void executeCommand(const s_cfg_timer &timer, uint8_t number) {
+// ─── Sunrise / Sunset ─────────────────────────────────────────────────────────
 
-  switch (timer.cmd) {
-  case CMD_UP:
-    ESP_LOGI(TAG, "Timer: %i | Cmd: UP | Mask: %04X", number + 1, timer.grp_mask);
-    jaroCmd(CMD_GRP_UP, timer.grp_mask);
-    break;
-  case CMD_DOWN:
-    ESP_LOGI(TAG, "Timer: %i | Cmd: DOWN | Mask: %04X", number + 1, timer.grp_mask);
-    jaroCmd(CMD_GRP_DOWN, timer.grp_mask);
-    break;
-  case CMD_SHADE:
-    ESP_LOGI(TAG, "Timer: %i | Cmd: SHADE | Mask: %04X", number + 1, timer.grp_mask);
-    jaroCmd(CMD_GRP_SHADE, timer.grp_mask);
-    break;
-
-  default:
-    break;
+void getSunriseOrSunset(uint8_t type, int16_t offset, float latitude, float longitude,
+                        uint8_t &hour, uint8_t &minute,
+                        uint8_t astro_mode, int8_t horizon_value) {
+  float zenith;
+  switch (astro_mode) {
+    case ASTRO_CIVIL:       zenith = ZENITH_CIVIL;                 break;
+    case ASTRO_NAUTIC:      zenith = ZENITH_NAUTIC;                break;
+    case ASTRO_ASTRONOMIC:  zenith = ZENITH_ASTRONOMIC;            break;
+    case ASTRO_HORIZON:     zenith = 90.0f - (float)horizon_value; break;
+    default:                zenith = ZENITH_REAL;                  break;
   }
-}
 
-/**
- * *******************************************************************
- * @brief   Get the sunrise or sunset time.
- * @param   type: TYPE_SUNRISE or TYPE_SUNDOWN.
- * @param   offset: Time offset in minutes.
- * @param   latitude: Latitude.
- * @param   longitude: Longitude.
- * @param   hour: Sunrise or sunset hour.
- * @param   minute: Sunrise or sunset minute.
- * @return  none
- * *******************************************************************
- */
-void getSunriseOrSunset(uint8_t type, int16_t offset, float latitude, float longitude, uint8_t &hour, uint8_t &minute) {
-
-  int16_t timeInMinutes;
-  time_t now;
-  tm dti, utcTime;
+  time_t now; tm dti, utcTime;
   time(&now);
-  localtime_r(&now, &dti);  // local Time
-  gmtime_r(&now, &utcTime); // UTC Time
+  localtime_r(&now, &dti);
+  gmtime_r(&now, &utcTime);
 
-  float utcOffset = static_cast<float>(difftime(mktime(&dti), mktime(&utcTime))) / 3600.0;
-
+  float utcOffset = static_cast<float>(difftime(mktime(&dti), mktime(&utcTime))) / 3600.0f;
   Dusk2Dawn location(latitude, longitude, utcOffset);
 
+  int16_t timeInMinutes;
   if (type == TYPE_SUNRISE) {
-    timeInMinutes = location.sunrise(dti.tm_year + 1900, dti.tm_mon + 1, dti.tm_mday, dti.tm_isdst);
+    timeInMinutes = location.sunrise(dti.tm_year + 1900, dti.tm_mon + 1, dti.tm_mday, dti.tm_isdst, zenith);
   } else if (type == TYPE_SUNDOWN) {
-    timeInMinutes = location.sunset(dti.tm_year + 1900, dti.tm_mon + 1, dti.tm_mday, dti.tm_isdst);
+    timeInMinutes = location.sunset(dti.tm_year + 1900, dti.tm_mon + 1, dti.tm_mday, dti.tm_isdst, zenith);
   } else {
-    hour = 0;
-    minute = 0;
-    return;
+    hour = 0; minute = 0; return;
   }
 
-  // add offset
   timeInMinutes += offset;
-
-  // check for overflow
-  timeInMinutes = (timeInMinutes + 1440) % 1440;
-
-  // convert to hour and minute
-  hour = timeInMinutes / 60;
+  timeInMinutes  = (timeInMinutes + 1440) % 1440;
+  hour   = timeInMinutes / 60;
   minute = timeInMinutes % 60;
 }
 
-/**
- * *******************************************************************
- * @brief   Get the hour from a time value.
- * @param   time_value: Time value in HH:MM format.
- * @return  Hour value.
- * *******************************************************************
- */
-int getHour(const char *time_value) {
-  // Format must be HH:MM -> 5 characters.
-  if (strlen(time_value) == 5) {
-    return (time_value[0] - '0') * 10 + (time_value[1] - '0');
+// ─── Time parsing ─────────────────────────────────────────────────────────────
+
+static int getHour(const char *t)   { return strlen(t) == 5 ? (t[0]-'0')*10 + (t[1]-'0') : -1; }
+static int getMinute(const char *t) { return strlen(t) == 5 ? (t[3]-'0')*10 + (t[4]-'0') : -1; }
+
+// ─── Event trigger check ─────────────────────────────────────────────────────
+
+static void calcEventTime(uint8_t type, const char *timeVal, int16_t offset,
+                           uint8_t astroMode, int8_t horizonVal,
+                           bool useMin, const char *minTime,
+                           bool useMax, const char *maxTime,
+                           uint8_t &evH, uint8_t &evM) {
+  if (type == TYPE_FIXED_TIME) {
+    evH = getHour(timeVal);
+    evM = getMinute(timeVal);
   } else {
-    return -1;
+    getSunriseOrSunset(type, offset, config.geo.latitude, config.geo.longitude,
+                       evH, evM, astroMode, horizonVal);
+    if (useMin) {
+      uint8_t mnH = getHour(minTime), mnM = getMinute(minTime);
+      if (evH < mnH || (evH == mnH && evM < mnM)) { evH = mnH; evM = mnM; }
+    }
+    if (useMax) {
+      uint8_t mxH = getHour(maxTime), mxM = getMinute(maxTime);
+      if (evH > mxH || (evH == mxH && evM > mxM)) { evH = mxH; evM = mxM; }
+    }
   }
 }
 
-/**
- * *******************************************************************
- * @brief   Get the minute from a time value.
- * @param   time_value: Time value in HH:MM format.
- * @return  Minute value.
- * *******************************************************************
- */
-int getMinute(const char *time_value) {
-  // Format must be HH:MM -> 5 characters.
-  if (strlen(time_value) == 5) {
-    return (time_value[3] - '0') * 10 + (time_value[4] - '0');
+static bool eventTriggered(const s_timer_event &ev, uint8_t curH, uint8_t curM, int wday) {
+  if (!ev.enable) return false;
+
+  bool isWeekend = (wday == 0 || wday == 6); // 0=Sunday, 6=Saturday
+
+  uint8_t evH, evM;
+
+  if (isWeekend && ev.weekend_enable) {
+    // Use weekend-specific time
+    calcEventTime(ev.weekend_type, ev.weekend_time_value, ev.weekend_offset_value,
+                  ev.weekend_astro_mode, ev.weekend_horizon_value,
+                  false, "", false, "", evH, evM);
   } else {
-    return -1;
+    // Use normal weekday time
+    calcEventTime(ev.type, ev.time_value, ev.offset_value,
+                  ev.astro_mode, ev.horizon_value,
+                  ev.use_min_time, ev.min_time_value,
+                  ev.use_max_time, ev.max_time_value,
+                  evH, evM);
   }
+
+  return (evH == curH && evM == curM);
 }
 
-/**
- * *******************************************************************
- * @brief   Check if a timer is triggered.
- * @param   timer: Timer configuration.
- * @param   currentHour: Current hour.
- * @param   currentMinute: Current minute.
- * @return  true if the timer is triggered, false otherwise.
- * *******************************************************************
- */
-bool checkTimerTrigger(const s_cfg_timer &timer, uint8_t currentHour, uint8_t currentMinute) {
-  if (timer.type == TYPE_FIXED_TIME) {
-    uint8_t timerHour = getHour(timer.time_value);
-    uint8_t timerMinute = getMinute(timer.time_value);
-    return (timerHour == currentHour && timerMinute == currentMinute);
-  } else if (timer.type == TYPE_SUNRISE || timer.type == TYPE_SUNDOWN) {
-    uint8_t eventHour, eventMinute;
-    getSunriseOrSunset(timer.type, timer.offset_value, config.geo.latitude, config.geo.longitude, eventHour, eventMinute);
+// ─── Timer cyclic ─────────────────────────────────────────────────────────────
 
-    // Check min/max time ranges:
-    if (timer.use_min_time) {
-      uint8_t minHour = getHour(timer.min_time_value);
-      uint8_t minMinute = getMinute(timer.min_time_value);
-      if (minHour >= 0) {
-        eventHour = max(eventHour, minHour);
-      }
-      if (eventHour == minHour) {
-        eventMinute = max(eventMinute, minMinute);
-      }
-    }
-
-    if (timer.use_max_time) {
-      uint8_t maxHour = getHour(timer.max_time_value);
-      uint8_t maxMinute = getMinute(timer.max_time_value);
-      if (maxHour >= 0) {
-        eventHour = min(eventHour, maxHour);
-      }
-      if (eventHour == maxHour) {
-        eventMinute = min(eventMinute, maxMinute);
-      }
-    }
-
-    return (eventHour == currentHour && eventMinute == currentMinute);
-  }
-  return false;
-}
-
-/**
- * *******************************************************************
- * @brief   Timer Cyclic Loop
- * @param   none
- * @return  none
- * *******************************************************************
- */
 void timerCyclic() {
-  time_t now;
-  tm dti;
-
+  time_t now; tm dti;
   time(&now);
   localtime_r(&now, &dti);
 
-  // check if year is valid
-  if (dti.tm_year < 125) { // 2025 = 1900 + 125
-    return;
+  if (dti.tm_year < 125) return; // wait for valid NTP time
+
+  if ((now / 60) == (lastProcessedTime / 60)) return; // once per minute
+  lastProcessedTime = now;
+
+  uint8_t H = dti.tm_hour;
+  uint8_t M = dti.tm_min;
+  int     W = dti.tm_wday;
+
+  // ── Per-channel timers ────────────────────────────────────────────────────
+  for (int ch = 0; ch < 16; ch++) {
+    const s_channel_timer &ct = config.ch_timer[ch];
+    if (!ct.enable || !config.jaro.ch_enable[ch]) continue;
+    if (!isDayEnabled(ct, W)) continue;
+
+    if (ct.up.enable && eventTriggered(ct.up, H, M, W)) {
+      ESP_LOGI(TAG, "Ch-Timer ch %d UP", ch + 1);
+      jaroCmd(CMD_UP, (uint8_t)ch);
+    }
+    if (ct.down.enable && eventTriggered(ct.down, H, M, W)) {
+      ESP_LOGI(TAG, "Ch-Timer ch %d DOWN", ch + 1);
+      jaroCmd(CMD_DOWN, (uint8_t)ch);
+    }
   }
 
-  // check if minute has changed
-  if ((now / 60) != (lastProcessedTime / 60)) {
-    lastProcessedTime = now;
+  // ── Per-group timers ──────────────────────────────────────────────────────
+  for (int g = 0; g < 6; g++) {
+    const s_channel_timer &gt = config.grp_timer[g];
+    if (!gt.enable || !config.jaro.grp_enable[g]) continue;
+    if (!isDayEnabled(gt, W)) continue;
 
-    // check all timer
-    for (int i = 0; i < 6; i++) {
-      if (config.timer[i].enable) {
-        // check if day is enabled
-        if (isDayEnabled(config.timer[i], dti.tm_wday)) {
-          // check if timer is triggered
-          if (checkTimerTrigger(config.timer[i], dti.tm_hour, dti.tm_min)) {
-            executeCommand(config.timer[i], i);
-          }
-        }
-      }
+    if (gt.up.enable && eventTriggered(gt.up, H, M, W)) {
+      ESP_LOGI(TAG, "Grp-Timer grp %d UP", g + 1);
+      jaroCmd(CMD_GRP_UP, config.jaro.grp_mask[g]);
+    }
+    if (gt.down.enable && eventTriggered(gt.down, H, M, W)) {
+      ESP_LOGI(TAG, "Grp-Timer grp %d DOWN", g + 1);
+      jaroCmd(CMD_GRP_DOWN, config.jaro.grp_mask[g]);
     }
   }
 }

@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
     <script src="../js/fun.js" defer></script>
     <script src="../js/doc.js" defer></script>
-    <script src="../js/user.js" defer></script>
     <script src="../js/lang.js" defer></script>
     <style></style>
     <script>
@@ -20,1143 +19,371 @@
     </script>
   </head>
   <body>
-    <!-- Layout -->
-    <header
-      style="
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "></header>
-    <!-- Tab-Content -->
+    <header style="height:100px;display:flex;align-items:center;justify-content:center;"></header>
     <main class="container">
       <!--SECTION-START-->
+      <!-- i18n keys used in JS: 
+        data-i18n="cmd_up" data-i18n="cmd_down" data-i18n="weekend_override"
+        data-i18n="astro_real" data-i18n="astro_civil" data-i18n="astro_nautic"
+        data-i18n="astro_astronomic" data-i18n="astro_horizon"
+        data-i18n="offset_min" data-i18n="time" data-i18n="sunrise" data-i18n="sundown"
+        data-i18n="day_mo" data-i18n="day_tu" data-i18n="day_we" data-i18n="day_th"
+        data-i18n="day_fr" data-i18n="day_sa" data-i18n="day_su"
+        data-i18n="timer_shutters" data-i18n="timer_groups"
+        data-i18n="no_timer_active" data-i18n="timer_overview"
+        data-i18n="name" data-i18n="cmd_up" data-i18n="cmd_down" data-i18n="weekdays"
+      -->
       <!-- Tab-3 -->
       <div id="tab3" class="tab-content">
-        <div class="grid" id="timers-container">
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 1</div>
-              <div class="section-header">
-                <label for="timer0_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer0_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER0"
-                    id="cfg_timer_0_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm0" class="OPT_TIMER0">
-                <fieldset>
-                  <label for="timeType0" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_0_type"
-                    name="timeType0"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput0">
-                    <label for="timeValue0" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_0_time_value"
-                      name="timeValue0" />
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput0"
-                    style="display: none">
-                    <label for="offsetValue0" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_0_offset_value"
-                      name="offsetValue0"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer0-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        data-toggle="timeInputs"
-                        name="timer0_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME0"
-                        id="cfg_timer_0_use_min_time" />
-
-                      <label
-                        for="timer0_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME0" id="minTimeInput0">
-                      <input
-                        type="time"
-                        id="cfg_timer_0_min_time_value"
-                        name="minTimeValue0" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        data-toggle="timeInputs"
-                        name="timer0_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME0"
-                        id="cfg_timer_0_use_max_time" />
-
-                      <label
-                        for="timer0_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME0" id="maxTimeInput0">
-                      <input
-                        type="time"
-                        id="cfg_timer_0_max_time_value"
-                        name="maxTimeValue0" />
-                    </div>
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command0" data-i18n="command"></label>
-                  <select id="cfg_timer_0_cmd" name="command0">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_monday"
-                        name="days0" />
-                      <label for="monday0" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_tuesday"
-                        name="days0" />
-                      <label for="tuesday0" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_wednesday"
-                        name="days0" />
-                      <label for="wednesday0" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_thursday"
-                        name="days0" />
-                      <label for="thursday0" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_friday"
-                        name="days0" />
-                      <label for="friday0" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_saturday"
-                        name="days0" />
-                      <label for="saturday0" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_0_sunday"
-                        name="days0" />
-                      <label for="sunday0" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer0" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer0"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_0_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
+      <input type="hidden" id="astro_real_rise"       value="--:--">
+      <input type="hidden" id="astro_real_set"        value="--:--">
+      <input type="hidden" id="astro_civil_rise"      value="--:--">
+      <input type="hidden" id="astro_civil_set"       value="--:--">
+      <input type="hidden" id="astro_nautic_rise"     value="--:--">
+      <input type="hidden" id="astro_nautic_set"      value="--:--">
+      <input type="hidden" id="astro_astronomic_rise" value="--:--">
+      <input type="hidden" id="astro_astronomic_set"  value="--:--">
+        <h4 data-i18n="timer_shutters"></h4>
+        <div class="grid" id="ch_timer_grid"></div>
+        <h4 data-i18n="timer_groups" style="margin-top:2rem"></h4>
+        <div class="grid" id="grp_timer_grid"></div>
+        <div style="margin-top:1.5rem">
+          <article class="card">
+            <p class="table-header" data-i18n="timer_overview"></p>
+            <table class="striped" style="font-size:0.85rem;width:100%">
+              <thead id="timer_overview_head"><tr>
+                <th data-i18n="name"></th>
+                <th data-i18n="cmd_up"></th>
+                <th data-i18n="cmd_down"></th>
+                <th data-i18n="weekdays"></th>
+              </tr></thead>
+              <tbody id="timer_overview_table">
+                <tr><td colspan="4" style="text-align:center;color:var(--muted-color)">-</td></tr>
+              </tbody>
+            </table>
           </article>
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 2</div>
-              <div class="section-header">
-                <label for="timer1_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer1_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER1"
-                    id="cfg_timer_1_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm1" class="OPT_TIMER1">
-                <fieldset>
-                  <label for="timeType1" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_1_type"
-                    name="timeType1"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput1">
-                    <label for="timeValue1" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_1_time_value"
-                      name="timeValue1" />
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput1"
-                    style="display: none">
-                    <label for="offsetValue1" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_1_offset_value"
-                      name="offsetValue1"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer1-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        data-toggle="timeInputs"
-                        name="timer1_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME1"
-                        id="cfg_timer_1_use_min_time" />
-
-                      <label
-                        for="timer1_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME1" id="minTimeInput1">
-                      <input
-                        type="time"
-                        id="cfg_timer_1_min_time_value"
-                        name="minTimeValue1" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        data-toggle="timeInputs"
-                        name="timer1_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME1"
-                        id="cfg_timer_1_use_max_time" />
-
-                      <label
-                        for="timer1_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME1" id="maxTimeInput1">
-                      <input
-                        type="time"
-                        id="cfg_timer_1_max_time_value"
-                        name="maxTimeValue1" />
-                    </div>
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command1" data-i18n="command"></label>
-                  <select id="cfg_timer_1_cmd" name="command1">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_monday"
-                        name="days1" />
-                      <label for="monday1" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_tuesday"
-                        name="days1" />
-                      <label for="tuesday1" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_wednesday"
-                        name="days1" />
-                      <label for="wednesday1" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_thursday"
-                        name="days1" />
-                      <label for="thursday1" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_friday"
-                        name="days1" />
-                      <label for="friday1" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_saturday"
-                        name="days1" />
-                      <label for="saturday1" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_1_sunday"
-                        name="days1" />
-                      <label for="sunday1" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer0" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer0"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_1_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
-          </article>
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 3</div>
-              <div class="section-header">
-                <label for="timer2_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer2_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER2"
-                    id="cfg_timer_2_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm2" class="OPT_TIMER2">
-                <fieldset>
-                  <label for="timeType2" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_2_type"
-                    name="timeType2"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput2">
-                    <label for="timeValue2" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_2_time_value"
-                      name="timeValue2" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer2-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer2_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME2"
-                        id="cfg_timer_2_use_min_time" />
-
-                      <label
-                        for="timer2_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME2" id="minTimeInput2">
-                      <input
-                        type="time"
-                        id="cfg_timer_2_min_time_value"
-                        name="minTimeValue2" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer2_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME2"
-                        id="cfg_timer_2_use_max_time" />
-
-                      <label
-                        for="timer2_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME2" id="maxTimeInput2">
-                      <input
-                        type="time"
-                        id="cfg_timer_2_max_time_value"
-                        name="maxTimeValue2" />
-                    </div>
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput2"
-                    style="display: none">
-                    <label for="offsetValue2" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_2_offset_value"
-                      name="offsetValue2"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command2" data-i18n="command"></label>
-                  <select id="cfg_timer_2_cmd" name="command2">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_monday"
-                        name="days2" />
-                      <label for="monday2" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_tuesday"
-                        name="days2" />
-                      <label for="tuesday2" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_wednesday"
-                        name="days2" />
-                      <label for="wednesday2" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_thursday"
-                        name="days2" />
-                      <label for="thursday2" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_friday"
-                        name="days2" />
-                      <label for="friday2" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_saturday"
-                        name="days2" />
-                      <label for="saturday2" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_2_sunday"
-                        name="days2" />
-                      <label for="sunday2" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer2" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer2"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_2_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
-          </article>
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 4</div>
-              <div class="section-header">
-                <label for="timer3_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer3_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER3"
-                    id="cfg_timer_3_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm3" class="OPT_TIMER3">
-                <fieldset>
-                  <label for="timeType3" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_3_type"
-                    name="timeType3"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput3">
-                    <label for="timeValue3" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_3_time_value"
-                      name="timeValue3" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer3-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer3_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME3"
-                        id="cfg_timer_3_use_min_time" />
-
-                      <label
-                        for="timer3_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME3" id="minTimeInput3">
-                      <input
-                        type="time"
-                        id="cfg_timer_3_min_time_value"
-                        name="minTimeValue3" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer3_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME3"
-                        id="cfg_timer_3_use_max_time" />
-
-                      <label
-                        for="timer3_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME3" id="maxTimeInput3">
-                      <input
-                        type="time"
-                        id="cfg_timer_3_max_time_value"
-                        name="maxTimeValue3" />
-                    </div>
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput3"
-                    style="display: none">
-                    <label for="offsetValue3" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_3_offset_value"
-                      name="offsetValue3"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command3" data-i18n="command"></label>
-                  <select id="cfg_timer_3_cmd" name="command3">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_monday"
-                        name="days3" />
-                      <label for="monday3" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_tuesday"
-                        name="days3" />
-                      <label for="tuesday3" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_wednesday"
-                        name="days3" />
-                      <label for="wednesday3" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_thursday"
-                        name="days3" />
-                      <label for="thursday3" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_friday"
-                        name="days3" />
-                      <label for="friday3" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_saturday"
-                        name="days3" />
-                      <label for="saturday3" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_3_sunday"
-                        name="days3" />
-                      <label for="sunday3" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer3" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer3"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_3_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
-          </article>
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 5</div>
-              <div class="section-header">
-                <label for="timer4_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer4_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER4"
-                    id="cfg_timer_4_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm4" class="OPT_TIMER4">
-                <fieldset>
-                  <label for="timeType4" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_4_type"
-                    name="timeType4"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput4">
-                    <label for="timeValue4" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_4_time_value"
-                      name="timeValue4" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer4-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer4_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME4"
-                        id="cfg_timer_4_use_min_time" />
-
-                      <label
-                        for="timer4_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME4" id="minTimeInput4">
-                      <input
-                        type="time"
-                        id="cfg_timer_4_min_time_value"
-                        name="minTimeValue4" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer4_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME4"
-                        id="cfg_timer_4_use_max_time" />
-
-                      <label
-                        for="timer4_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME4" id="maxTimeInput4">
-                      <input
-                        type="time"
-                        id="cfg_timer_4_max_time_value"
-                        name="maxTimeValue4" />
-                    </div>
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput4"
-                    style="display: none">
-                    <label for="offsetValue4" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_4_offset_value"
-                      name="offsetValue4"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command4" data-i18n="command"></label>
-                  <select id="cfg_timer_4_cmd" name="command4">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_monday"
-                        name="days4" />
-                      <label for="monday4" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_tuesday"
-                        name="days4" />
-                      <label for="tuesday4" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_wednesday"
-                        name="days4" />
-                      <label for="wednesday4" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_thursday"
-                        name="days4" />
-                      <label for="thursday4" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_friday"
-                        name="days4" />
-                      <label for="friday4" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_saturday"
-                        name="days4" />
-                      <label for="saturday4" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_4_sunday"
-                        name="days4" />
-                      <label for="sunday4" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer4" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer4"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_4_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
-          </article>
-          <article>
-            <div class="dash-main">
-              <div class="dash-header">Timer 6</div>
-              <div class="section-header">
-                <label for="timer5_enable" data-i18n="activate"></label>
-                <div class="switch-container">
-                  <input
-                    name="timer5_enable"
-                    type="checkbox"
-                    role="switch"
-                    hideOpt="OPT_TIMER5"
-                    id="cfg_timer_5_enable" />
-                </div>
-              </div>
-              <br />
-              <form id="timerForm5" class="OPT_TIMER5">
-                <fieldset>
-                  <label for="timeType5" data-i18n="timer_type"></label>
-                  <select
-                    id="cfg_timer_5_type"
-                    name="timeType5"
-                    data-toggle="timeInputs"
-                    onchange="toggleTimeInputs(this)">
-                    <option value="0" data-i18n="time"></option>
-                    <option value="1" data-i18n="sunrise"></option>
-                    <option value="2" data-i18n="sundown"></option>
-                  </select>
-
-                  <div class="time-input" id="timeInput5">
-                    <label for="timeValue5" data-i18n="time_HH_MM"></label>
-                    <input
-                      type="time"
-                      id="cfg_timer_5_time_value"
-                      name="timeValue5" />
-                  </div>
-
-                  <!-- min/max time settings for sunrise/sundown -->
-                  <div id="timer5-minmaxtime-settings" style="display: none">
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer5_use_min_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MINTIME5"
-                        id="cfg_timer_5_use_min_time" />
-
-                      <label
-                        for="timer5_use_min_time"
-                        data-i18n="use_min_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MINTIME5" id="minTimeInput5">
-                      <input
-                        type="time"
-                        id="cfg_timer_5_min_time_value"
-                        name="minTimeValue5" />
-                    </div>
-
-                    <div class="minmaxtime-switch">
-                      <input
-                        name="timer5_use_max_time"
-                        type="checkbox"
-                        role="switch"
-                        hideOpt="OPT_MAXTIME5"
-                        id="cfg_timer_5_use_max_time" />
-
-                      <label
-                        for="timer5_use_max_time"
-                        data-i18n="use_max_time"></label>
-                    </div>
-
-                    <div class="time-input OPT_MAXTIME5" id="maxTimeInput5">
-                      <input
-                        type="time"
-                        id="cfg_timer_5_max_time_value"
-                        name="maxTimeValue5" />
-                    </div>
-                  </div>
-
-                  <div
-                    class="time-input"
-                    id="offsetInput5"
-                    style="display: none">
-                    <label for="offsetValue5" data-i18n="offset_desc"></label>
-                    <input
-                      type="number"
-                      id="cfg_timer_5_offset_value"
-                      name="offsetValue5"
-                      placeholder="0"
-                      step="1" />
-                  </div>
-
-                  <!-- Dropdown for shutter cmd -->
-                  <label for="command5" data-i18n="command"></label>
-                  <select id="cfg_timer_5_cmd" name="command5">
-                    <option value="0" data-i18n="cmd_up"></option>
-                    <option value="1" data-i18n="cmd_down"></option>
-                    <option value="2" data-i18n="cmd_shade"></option>
-                  </select>
-
-                  <!-- Checkbox for wekdays -->
-                  <label data-i18n="weekdays"></label>
-                  <div class="grid">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_monday"
-                        name="days5" />
-                      <label for="monday5" data-i18n="day_mo"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_tuesday"
-                        name="days5" />
-                      <label for="tuesday5" data-i18n="day_tu"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_wednesday"
-                        name="days5" />
-                      <label for="wednesday5" data-i18n="day_we"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_thursday"
-                        name="days5" />
-                      <label for="thursday5" data-i18n="day_th"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_friday"
-                        name="days5" />
-                      <label for="friday5" data-i18n="day_fr"></label>
-                    </div>
-                    <br />
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_saturday"
-                        name="days5" />
-                      <label for="saturday5" data-i18n="day_sa"></label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cfg_timer_5_sunday"
-                        name="days5" />
-                      <label for="sunday5" data-i18n="day_su"></label>
-                    </div>
-                  </div>
-                  <!-- selection of shutter -->
-                  <div>
-                    <div class="leftright">
-                      <label for="mask_timer5" data-i18n="mask"></label>
-                      <button
-                        onclick="openGrpMaskHelp(this)"
-                        class="i_help"
-                        style="
-                          height: 20px;
-                          background-color: transparent;
-                          border: none;
-                        "></button>
-                    </div>
-                    <input
-                      class="bitmask-input"
-                      name="mask_timer5"
-                      type="text"
-                      data-type="bin"
-                      id="cfg_timer_5_grp_mask"
-                      oninput="validateBin(this)"
-                      onblur="formatBin(this)"
-                      pattern="[01]{1,16}"
-                      placeholder="Enter Bit-Mask (0 and 1 only, 16 chars)"
-                      maxlength="16" />
-                  </div>
-                  <br />
-                </fieldset>
-              </form>
-            </div>
-          </article>
-          <!-- END Grid1 -->
         </div>
-        <!-- END Tab-Content -->
+        
+<script>
+// -- Astro/Timer Hilfsfunktionen -------------------------------------------
+
+var astroKeyNames = ['real','civil','nautic','astronomic','horizon'];
+
+function getAstroTime(mode, type) {
+  if (mode >= 4 || type === '0') return '';
+  var el = document.getElementById('astro_' + astroKeyNames[mode] + '_' + (type==='1'?'rise':'set'));
+  return el ? el.value : '--:--';
+}
+
+function applyOffset(t, off) {
+  if (!t || t==='--:--' || !off) return t;
+  var p=t.split(':'), tot=parseInt(p[0])*60+parseInt(p[1])+off;
+  tot=((tot%1440)+1440)%1440;
+  var h=Math.floor(tot/60),m=tot%60;
+  return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+}
+
+function updateTimeDisplay(prefix) {
+  var tEl=document.getElementById(prefix+'_type'),
+      mEl=document.getElementById(prefix+'_astro_mode'),
+      oEl=document.getElementById(prefix+'_offset_value'),
+      dEl=document.getElementById(prefix+'_time_display');
+  if (!tEl||!mEl||!dEl) return;
+  var t=tEl.value, m=parseInt(mEl.value||0);
+  if (t==='0'||m===4) { dEl.style.display='none'; return; }
+  var base=getAstroTime(m,t), o=oEl?parseInt(oEl.value)||0:0;
+  var time=applyOffset(base,o);
+  var lbl=t==='1'?'Aufgang: ':'Untergang: ';
+  var offTxt=o?(o>0?'+':'')+o+' min':'';
+  dEl.style.display=''; dEl.textContent=lbl+time+(offTxt?' ('+offTxt+')':'');
+}
+
+function toggleTimerType(sel, prefix) {
+  var f=document.getElementById(prefix+'_fixed'),a=document.getElementById(prefix+'_astro');
+  if (sel.value==='0'){if(f)f.style.display='';if(a)a.style.display='none';}
+  else{if(f)f.style.display='none';if(a)a.style.display='';}
+  updateTimeDisplay(prefix);
+}
+
+function toggleHorizon(sel, prefix) {
+  var d=document.getElementById(prefix+'_horizon_div');
+  if(d)d.style.display=sel.value==='4'?'':'none';
+  updateTimeDisplay(prefix);
+}
+
+function toggleWeekend(cb, prefix) {
+  var b=document.getElementById(prefix+'_block');
+  if(b)b.style.display=cb.checked?'':'none';
+}
+
+// -- Karten-Builder --------------------------------------------------------
+
+function buildEventBlock(p, dir, labelKey) {
+  var d=dir;
+  return '<div class="timer-event" style="flex:1;min-width:240px">'
+   +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+   +'<input type="checkbox" id="'+p+'_'+d+'_enable" name="'+p+'_'+d+'_enable" role="switch">'
+   +'<label for="'+p+'_'+d+'_enable" data-'+'i18n="'+labelKey+'" style="margin:0;font-weight:600"></label>'
+   +'</div>'
+   +'<select id="'+p+'_'+d+'_type" name="'+p+'_'+d+'_type"'
+   +' onchange="toggleTimerType(this,\''+p+'_'+d+'\')">'
+   +'<option value="0" data-i18n="time"></option>'
+   +'<option value="1" data-i18n="sunrise"></option>'
+   +'<option value="2" data-i18n="sundown"></option>'
+   +'</select>'
+   +'<div id="'+p+'_'+d+'_fixed" style="display:none">'
+   +'<input type="time" id="'+p+'_'+d+'_time_value" name="'+p+'_'+d+'_time_value">'
+   +'</div>'
+   +'<div id="'+p+'_'+d+'_astro" style="display:none">'
+   +'<select id="'+p+'_'+d+'_astro_mode" name="'+p+'_'+d+'_astro_mode"'
+   +' onchange="toggleHorizon(this,\''+p+'_'+d+'\');updateTimeDisplay(\''+p+'_'+d+'\')">'
+   +'<option value="0" data-i18n="astro_real"></option>'
+   +'<option value="1" data-i18n="astro_civil"></option>'
+   +'<option value="2" data-i18n="astro_nautic"></option>'
+   +'<option value="3" data-i18n="astro_astronomic"></option>'
+   +'<option value="4" data-i18n="astro_horizon"></option>'
+   +'</select>'
+   +'<div id="'+p+'_'+d+'_horizon_div" style="display:none">'
+   +'<input type="number" id="'+p+'_'+d+'_horizon_value" name="'+p+'_'+d+'_horizon_value" min="-9" max="9" placeholder="0" step="1">'
+   +'</div>'
+   +'<input type="number" id="'+p+'_'+d+'_offset_value" name="'+p+'_'+d+'_offset_value" min="-20" max="20" placeholder="0" step="1"'
+   +' oninput="updateTimeDisplay(\''+p+'_'+d+'\')">'
+   +'<label data-i18n="offset_min"></label>'
+   +'<div id="'+p+'_'+d+'_time_display" style="font-size:0.85rem;color:var(--primary);font-weight:600;display:none"></div>'
+   +'</div>'
+   // Weekend
+   +'<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--muted-border-color,#333)">'
+   +'<label style="display:flex;align-items:center;gap:6px;margin:0 0 4px 0">'
+   +'<input type="checkbox" id="'+p+'_'+d+'_we_enable" name="'+p+'_'+d+'_we_enable" role="switch"'
+   +' onchange="toggleWeekend(this,\''+p+'_'+d+'_we\')">'
+   +'<span data-i18n="weekend_override" style="font-size:0.85rem"></span>'
+   +'</label>'
+   +'<div id="'+p+'_'+d+'_we_block" style="display:none;padding-left:6px">'
+   +'<select id="'+p+'_'+d+'_we_type" name="'+p+'_'+d+'_we_type"'
+   +' onchange="toggleTimerType(this,\''+p+'_'+d+'_we\');updateTimeDisplay(\''+p+'_'+d+'_we\')">'
+   +'<option value="0" data-i18n="time"></option>'
+   +'<option value="1" data-i18n="sunrise"></option>'
+   +'<option value="2" data-i18n="sundown"></option>'
+   +'</select>'
+   +'<div id="'+p+'_'+d+'_we_fixed" style="display:none">'
+   +'<input type="time" id="'+p+'_'+d+'_we_time_value" name="'+p+'_'+d+'_we_time_value">'
+   +'</div>'
+   +'<div id="'+p+'_'+d+'_we_astro" style="display:none">'
+   +'<select id="'+p+'_'+d+'_we_astro_mode" name="'+p+'_'+d+'_we_astro_mode"'
+   +' onchange="toggleHorizon(this,\''+p+'_'+d+'_we\');updateTimeDisplay(\''+p+'_'+d+'_we\')">'
+   +'<option value="0" data-i18n="astro_real"></option>'
+   +'<option value="1" data-i18n="astro_civil"></option>'
+   +'<option value="2" data-i18n="astro_nautic"></option>'
+   +'<option value="3" data-i18n="astro_astronomic"></option>'
+   +'<option value="4" data-i18n="astro_horizon"></option>'
+   +'</select>'
+   +'<div id="'+p+'_'+d+'_we_horizon_div" style="display:none">'
+   +'<input type="number" id="'+p+'_'+d+'_we_horizon_value" name="'+p+'_'+d+'_we_horizon_value" min="-9" max="9" placeholder="0" step="1">'
+   +'</div>'
+   +'<input type="number" id="'+p+'_'+d+'_we_offset_value" name="'+p+'_'+d+'_we_offset_value" min="-20" max="20" placeholder="0" step="1"'
+   +' oninput="updateTimeDisplay(\''+p+'_'+d+'_we\')">'
+   +'<label data-i18n="offset_min"></label>'
+   +'<div id="'+p+'_'+d+'_we_time_display" style="font-size:0.85rem;color:var(--primary);font-weight:600;display:none"></div>'
+   +'</div>'
+   +'</div>'
+   +'</div>'
+   +'</div>';
+}
+
+function buildDays(p) {
+  var days=[['monday','day_mo'],['tuesday','day_tu'],['wednesday','day_we'],
+            ['thursday','day_th'],['friday','day_fr'],['saturday','day_sa'],['sunday','day_su']];
+  return days.map(function(d){
+    return '<label style="margin:0"><input type="checkbox" id="'+p+'_'+d[0]+'" name="'+p+'_'+d[0]+'">'
+          +'<span data-'+'i18n="'+d[1]+'"></span></label>';
+  }).join('');
+}
+
+function buildCard(p, isGroup) {
+  var html='<input type="hidden" id="'+p+'_active" value="false">'
+   +'<article class="dash" id="'+p+'_card">'
+   +'<div class="dash-main" style="gap:8px">'
+   +'<div class="dash-header" style="display:flex;align-items:center;gap:8px">'
+   +'<input type="checkbox" id="'+p+'_enable" name="'+p+'_enable" role="switch">'
+   +'<span id="'+p+'_name" style="font-weight:700"></span>'
+   +'</div>'
+   +'<div style="display:flex;gap:12px;flex-wrap:wrap">'
+   +buildEventBlock(p,'up','cmd_up')
+   +buildEventBlock(p,'down','cmd_down')
+   +'</div>'
+   +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+   +buildDays(p)
+   +'</div>'
+   +'</div></article>';
+  return html;
+}
+
+// -- Initialisierung -------------------------------------------------------
+
+function buildTimerCards() {
+  var chGrid=document.getElementById('ch_timer_grid');
+  var grpGrid=document.getElementById('grp_timer_grid');
+  if (!chGrid||!grpGrid) return;
+  for (var i=0;i<16;i++) chGrid.innerHTML+=buildCard('ch_timer_'+i, false);
+  for (var i=0;i<6;i++)  grpGrid.innerHTML+=buildCard('grp_timer_'+i, true);
+  if (typeof localizePage==='function') localizePage();
+}
+
+function isChecked(id) {
+  var el=document.getElementById(id);
+  if (!el) return false;
+  return el.type==='checkbox'?el.checked:el.value==='true';
+}
+
+function initTimerUI() {
+  for (var i=0;i<16;i++) {
+    var a=document.getElementById('ch_timer_'+i+'_active');
+    var c=document.getElementById('ch_timer_'+i+'_card');
+    if(c&&a) c.style.display=a.value==='true'?'':'none';
+  }
+  for (var i=0;i<6;i++) {
+    var a=document.getElementById('grp_timer_'+i+'_active');
+    var c=document.getElementById('grp_timer_'+i+'_card');
+    if(c&&a) c.style.display=a.value==='true'?'':'none';
+  }
+  document.querySelectorAll('select[id$="_type"]').forEach(function(sel){
+    toggleTimerType(sel, sel.id.replace('_type',''));
+  });
+  document.querySelectorAll('select[id$="_astro_mode"]').forEach(function(sel){
+    var p=sel.id.replace('_astro_mode','');
+    toggleHorizon(sel,p); updateTimeDisplay(p);
+  });
+  document.querySelectorAll('input[id$="_we_enable"]').forEach(function(cb){
+    if(cb.checked) toggleWeekend(cb, cb.id.replace('_we_enable','_we'));
+  });
+  buildTimerOverview();
+}
+
+// -- Timer-Übersicht -------------------------------------------------------
+
+function fmtTime(prefix) {
+  if (!isChecked(prefix+'_enable')) return '-';
+  var t=document.getElementById(prefix+'_type');
+  if (!t||t.value==='0') { var tv=document.getElementById(prefix+'_time_value'); return tv?tv.value:'-'; }
+  var m=parseInt((document.getElementById(prefix+'_astro_mode')||{}).value||0);
+  var key=astroKeyNames[m]||'real', dir=t.value==='1'?'rise':'set';
+  var el=document.getElementById('astro_'+key+'_'+dir);
+  var time=el?el.value:'--:--';
+  var o=parseInt((document.getElementById(prefix+'_offset_value')||{}).value)||0;
+  return applyOffset(time,o);
+}
+
+function fmtDays(prefix) {
+  var days=[['monday','Mo'],['tuesday','Di'],['wednesday','Mi'],
+            ['thursday','Do'],['friday','Fr'],['saturday','Sa'],['sunday','So']];
+  return days.filter(function(d){return isChecked(prefix+'_'+d[0]);})
+             .map(function(d){return d[1];}).join(' ')||'-';
+}
+
+function buildTimerOverview() {
+  var days = [
+    ['monday','Mo'],['tuesday','Di'],['wednesday','Mi'],
+    ['thursday','Do'],['friday','Fr'],['saturday','Sa'],['sunday','So']
+  ];
+  function isChecked(id) {
+    var el = document.getElementById(id);
+    if (!el) return false;
+    return el.type === 'checkbox' ? el.checked : el.value === 'true';
+  }
+  function calcTime(typeId, timeId, astroModeId, offsetId) {
+    var t = document.getElementById(typeId);
+    if (!t) return '-';
+    if (t.value === '0') {
+      var tv = document.getElementById(timeId); return tv ? tv.value : '-';
+    }
+    var modeEl = document.getElementById(astroModeId);
+    var key = astroKeyNames[modeEl ? parseInt(modeEl.value) : 0] || 'real';
+    var dir = t.value === '1' ? 'rise' : 'set';
+    var el = document.getElementById('astro_' + key + '_' + dir);
+    var time = el ? el.value : '--:--';
+    var off = document.getElementById(offsetId);
+    var o = off ? parseInt(off.value)||0 : 0;
+    if (o) {
+      var p = time.split(':'), tot = parseInt(p[0])*60+parseInt(p[1])+o;
+      tot = ((tot%1440)+1440)%1440;
+      var h=Math.floor(tot/60), mn=tot%60;
+      time=(h<10?'0':'')+h+':'+(mn<10?'0':'')+mn;
+    }
+    return time;
+  }
+  function fmtTime(p, d) {
+    if (!isChecked(p+'_'+d+'_enable')) return '-';
+    return calcTime(p+'_'+d+'_type', p+'_'+d+'_time_value',
+                    p+'_'+d+'_astro_mode', p+'_'+d+'_offset_value');
+  }
+  function fmtWeTime(p, d) {
+    if (!isChecked(p+'_'+d+'_we_enable')) return '';
+    return calcTime(p+'_'+d+'_we_type', p+'_'+d+'_we_time_value',
+                    p+'_'+d+'_we_astro_mode', p+'_'+d+'_we_offset_value');
+  }
+  function fmtDays(p) {
+    return days.filter(function(d){ return isChecked(p+'_'+d[0]); })
+               .map(function(d){ return d[1]; }).join(' ')||'-';
+  }
+
+  // Aktive Timer sammeln
+  var entries = [];
+  for (var i=0;i<16;i++) {
+    var p='ch_timer_'+i;
+    if (!document.getElementById(p+'_card') || !isChecked(p+'_enable')) continue;
+    entries.push({p:p, grp:false});
+  }
+  for (var i=0;i<6;i++) {
+    var p='grp_timer_'+i;
+    if (!document.getElementById(p+'_card') || !isChecked(p+'_enable')) continue;
+    entries.push({p:p, grp:true});
+  }
+
+  // Wochenend-Spalten nur wenn nötig
+  var hasWe = entries.some(function(e) {
+    return isChecked(e.p+'_up_we_enable') || isChecked(e.p+'_down_we_enable');
+  });
+
+  // Header setzen
+  var thead = document.getElementById('timer_overview_head');
+  if (thead) {
+    thead.innerHTML = '<tr><th>Name</th><th>Hoch</th>'
+      + (hasWe ? '<th style="color:var(--primary)">Hoch Sa+So</th>' : '')
+      + '<th>Runter</th>'
+      + (hasWe ? '<th style="color:var(--primary)">Runter Sa+So</th>' : '')
+      + '<th>Wochentage</th></tr>';
+  }
+
+  // Zeilen
+  var rows = '';
+  entries.forEach(function(e) {
+    var nm = document.getElementById(e.p+'_name');
+    var name = nm ? nm.textContent : e.p;
+    var weUp = fmtWeTime(e.p, 'up'), weDn = fmtWeTime(e.p, 'down');
+    rows += '<tr>'
+      + '<td>'+(e.grp?'<em>'+name+'</em>':name)+'</td>'
+      + '<td>'+fmtTime(e.p,'up')+'</td>'
+      + (hasWe ? '<td style="color:var(--primary)">'+(weUp||'–')+'</td>' : '')
+      + '<td>'+fmtTime(e.p,'down')+'</td>'
+      + (hasWe ? '<td style="color:var(--primary)">'+(weDn||'–')+'</td>' : '')
+      + '<td>'+fmtDays(e.p)+'</td>'
+      + '</tr>';
+  });
+
+  var tbl = document.getElementById('timer_overview_table');
+  if (tbl) tbl.innerHTML = rows || '<tr><td colspan="'+(hasWe?6:4)+'" style="text-align:center;color:var(--muted-color)">-</td></tr>';
+}
+
+// Direkt ausführen - Script steht am Ende des DOM-Abschnitts
+// Damit existieren die Elemente bevor WebSocket-Daten ankommen
+buildTimerCards();
+// initTimerUI nach Datenempfang (ruft buildTimerOverview intern auf)
+setTimeout(initTimerUI, 1000);
+</script>
+
       </div>
       <!--SECTION-END-->
     </main>
-    <!-- Footer -->
-    <footer
-      style="
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
-      <div id="status">STATUS</div>
-    </footer>
+    <footer style="height:100px;"></footer>
   </body>
 </html>

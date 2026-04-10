@@ -159,6 +159,66 @@ void updateSystemInfoElements() {
  * @param   none
  * @return  none
  * *******************************************************************/
+
+/**
+ * @brief Send all timer event fields to WebUI (called separately to avoid large JSON)
+ */
+static void sendTimerEventFields(JsonDocument &doc, const char *prefix, const s_timer_event &ev) {
+  char id[48];
+  snprintf(id, sizeof(id), "%s_enable",        prefix); webUI.addJson(doc, id, ev.enable);
+  snprintf(id, sizeof(id), "%s_type",          prefix); webUI.addJson(doc, id, (int)ev.type);
+  snprintf(id, sizeof(id), "%s_time_value",    prefix); webUI.addJson(doc, id, ev.time_value);
+  snprintf(id, sizeof(id), "%s_offset_value",  prefix); webUI.addJson(doc, id, (int)ev.offset_value);
+  snprintf(id, sizeof(id), "%s_astro_mode",    prefix); webUI.addJson(doc, id, (int)ev.astro_mode);
+  snprintf(id, sizeof(id), "%s_we_enable",        prefix); webUI.addJson(doc, id, ev.weekend_enable);
+  snprintf(id, sizeof(id), "%s_we_type",          prefix); webUI.addJson(doc, id, (int)ev.weekend_type);
+  snprintf(id, sizeof(id), "%s_we_time_value",    prefix); webUI.addJson(doc, id, ev.weekend_time_value);
+  snprintf(id, sizeof(id), "%s_we_offset_value",  prefix); webUI.addJson(doc, id, (int)ev.weekend_offset_value);
+  snprintf(id, sizeof(id), "%s_we_astro_mode",    prefix); webUI.addJson(doc, id, (int)ev.weekend_astro_mode);
+  snprintf(id, sizeof(id), "%s_we_horizon_value", prefix); webUI.addJson(doc, id, (int)ev.weekend_horizon_value);
+}
+
+void updateTimerElements() {
+  JsonDocument timerDoc;
+  char id[48]; char prefix[48];
+
+  // Channel timers - in 4 Paketen je 4 Kanaele senden
+  for (int batch = 0; batch < 4; batch++) {
+    webUI.initJsonBuffer(timerDoc);
+    for (int i = batch*4; i < batch*4+4 && i < 16; i++) {
+      snprintf(id, sizeof(id), "ch_timer_%d_monday", i);    webUI.addJson(timerDoc, id, config.ch_timer[i].monday);
+      snprintf(id, sizeof(id), "ch_timer_%d_tuesday", i);   webUI.addJson(timerDoc, id, config.ch_timer[i].tuesday);
+      snprintf(id, sizeof(id), "ch_timer_%d_wednesday", i); webUI.addJson(timerDoc, id, config.ch_timer[i].wednesday);
+      snprintf(id, sizeof(id), "ch_timer_%d_thursday", i);  webUI.addJson(timerDoc, id, config.ch_timer[i].thursday);
+      snprintf(id, sizeof(id), "ch_timer_%d_friday", i);    webUI.addJson(timerDoc, id, config.ch_timer[i].friday);
+      snprintf(id, sizeof(id), "ch_timer_%d_saturday", i);  webUI.addJson(timerDoc, id, config.ch_timer[i].saturday);
+      snprintf(id, sizeof(id), "ch_timer_%d_sunday", i);    webUI.addJson(timerDoc, id, config.ch_timer[i].sunday);
+      snprintf(prefix, sizeof(prefix), "ch_timer_%d_up", i);
+      sendTimerEventFields(timerDoc, prefix, config.ch_timer[i].up);
+      snprintf(prefix, sizeof(prefix), "ch_timer_%d_down", i);
+      sendTimerEventFields(timerDoc, prefix, config.ch_timer[i].down);
+    }
+    webUI.wsUpdateWebJSON(timerDoc);
+  }
+
+  // Group timers - ein Paket
+  webUI.initJsonBuffer(timerDoc);
+  for (int i = 0; i < 6; i++) {
+    snprintf(id, sizeof(id), "grp_timer_%d_monday", i);    webUI.addJson(timerDoc, id, config.grp_timer[i].monday);
+    snprintf(id, sizeof(id), "grp_timer_%d_tuesday", i);   webUI.addJson(timerDoc, id, config.grp_timer[i].tuesday);
+    snprintf(id, sizeof(id), "grp_timer_%d_wednesday", i); webUI.addJson(timerDoc, id, config.grp_timer[i].wednesday);
+    snprintf(id, sizeof(id), "grp_timer_%d_thursday", i);  webUI.addJson(timerDoc, id, config.grp_timer[i].thursday);
+    snprintf(id, sizeof(id), "grp_timer_%d_friday", i);    webUI.addJson(timerDoc, id, config.grp_timer[i].friday);
+    snprintf(id, sizeof(id), "grp_timer_%d_saturday", i);  webUI.addJson(timerDoc, id, config.grp_timer[i].saturday);
+    snprintf(id, sizeof(id), "grp_timer_%d_sunday", i);    webUI.addJson(timerDoc, id, config.grp_timer[i].sunday);
+    snprintf(prefix, sizeof(prefix), "grp_timer_%d_up", i);
+    sendTimerEventFields(timerDoc, prefix, config.grp_timer[i].up);
+    snprintf(prefix, sizeof(prefix), "grp_timer_%d_down", i);
+    sendTimerEventFields(timerDoc, prefix, config.grp_timer[i].down);
+  }
+  webUI.wsUpdateWebJSON(timerDoc);
+}
+
 void updateSystemInfoElementsStatic() {
 
   webUI.initJsonBuffer(jsonDoc);
@@ -175,13 +235,37 @@ void updateSystemInfoElementsStatic() {
 
   webUI.addJson(jsonDoc, "p12_jaro_devcnt", jaroGetDevCnt());
 
-  // Sunrise, Sunset
+  // Sunrise, Sunset + alle Astro-Modi fuer Timer-Anzeige
+  struct { uint8_t mode; const char *key; } astroModes[] = {
+    { ASTRO_REAL,       "real"       },
+    { ASTRO_CIVIL,      "civil"      },
+    { ASTRO_NAUTIC,     "nautic"     },
+    { ASTRO_ASTRONOMIC, "astronomic" },
+  };
+
   uint8_t sunriseHour, sunriseMinute;
+  uint8_t sundownHour, sundownMinute;
+  char astroKey[32];
+
+  for (int m = 0; m < 4; m++) {
+    getSunriseOrSunset(TYPE_SUNRISE, 0, config.geo.latitude, config.geo.longitude,
+                       sunriseHour, sunriseMinute, astroModes[m].mode, 0);
+    snprintf(tmpMessage, sizeof(tmpMessage), "%02d:%02d", sunriseHour, sunriseMinute);
+    snprintf(astroKey,   sizeof(astroKey),   "astro_%s_rise", astroModes[m].key);
+    webUI.addJson(jsonDoc, astroKey, tmpMessage);
+
+    getSunriseOrSunset(TYPE_SUNDOWN, 0, config.geo.latitude, config.geo.longitude,
+                       sundownHour, sundownMinute, astroModes[m].mode, 0);
+    snprintf(tmpMessage, sizeof(tmpMessage), "%02d:%02d", sundownHour, sundownMinute);
+    snprintf(astroKey,   sizeof(astroKey),   "astro_%s_set",  astroModes[m].key);
+    webUI.addJson(jsonDoc, astroKey, tmpMessage);
+  }
+
+  // System page sunrise/sunset (REAL mode)
   getSunriseOrSunset(TYPE_SUNRISE, 0, config.geo.latitude, config.geo.longitude, sunriseHour, sunriseMinute);
   snprintf(tmpMessage, sizeof(tmpMessage), "%02d:%02d", sunriseHour, sunriseMinute);
   webUI.addJson(jsonDoc, "p09_sunrise", tmpMessage);
 
-  uint8_t sundownHour, sundownMinute;
   getSunriseOrSunset(TYPE_SUNDOWN, 0, config.geo.latitude, config.geo.longitude, sundownHour, sundownMinute);
   snprintf(tmpMessage, sizeof(tmpMessage), "%02d:%02d", sundownHour, sundownMinute);
   webUI.addJson(jsonDoc, "p09_sundown", tmpMessage);
@@ -205,13 +289,34 @@ void updateSystemInfoElementsStatic() {
     }
   }
 
-  // Remote serial as hex string (so the hex input field shows the correct value)
+  // Remote serial as hex string
   for (int i = 0; i < 16; i++) {
     char serialId[32];
     char serialHex[8];
     snprintf(serialId, sizeof(serialId), "cfg_jaro_remote_serial_%d", i);
     snprintf(serialHex, sizeof(serialHex), "%06lx", config.jaro.remote_serial[i]);
     webUI.addJson(jsonDoc, serialId, serialHex);
+  }
+
+  // Channel timer: name, active, enable (kompakt im Haupt-JSON)
+  for (int i = 0; i < 16; i++) {
+    char id[48];
+    snprintf(id, sizeof(id), "ch_timer_%d_name", i);
+    webUI.addJson(jsonDoc, id, config.jaro.ch_name[i][0] ? config.jaro.ch_name[i] : "Kanal");
+    snprintf(id, sizeof(id), "ch_timer_%d_active", i);
+    webUI.addJson(jsonDoc, id, config.jaro.ch_enable[i]);
+    snprintf(id, sizeof(id), "ch_timer_%d_enable", i);
+    webUI.addJson(jsonDoc, id, config.ch_timer[i].enable);
+  }
+  // Group timer: name, active, enable
+  for (int i = 0; i < 6; i++) {
+    char id[48];
+    snprintf(id, sizeof(id), "grp_timer_%d_name", i);
+    webUI.addJson(jsonDoc, id, config.jaro.grp_name[i][0] ? config.jaro.grp_name[i] : "Gruppe");
+    snprintf(id, sizeof(id), "grp_timer_%d_active", i);
+    webUI.addJson(jsonDoc, id, config.jaro.grp_enable[i]);
+    snprintf(id, sizeof(id), "grp_timer_%d_enable", i);
+    webUI.addJson(jsonDoc, id, config.grp_timer[i].enable);
   }
 
   webUI.wsUpdateWebJSON(jsonDoc);
@@ -415,7 +520,8 @@ void webUIupdates() {
   // ON-BROWSER-REFRESH: refresh ALL elements - do this step by step not to stress the connection
   if (refreshTimer1.cycleTrigger(WEBUI_FAST_REFRESH_TIME_MS) && refreshRequest && !ota.isActive()) {
 
-    updateSystemInfoElementsStatic(); // update static informations (≈ 200 Bytes)
+    updateSystemInfoElementsStatic(); // update static informations
+    updateTimerElements();              // update timer fields (separate packets) (≈ 200 Bytes)
     refreshRequest = false;
   }
 

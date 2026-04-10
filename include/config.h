@@ -4,7 +4,7 @@
 /*-------------------------------------------------------------------------------
 General Configuration
 --------------------------------------------------------------------------------*/
-#define VERSION "v1.10.1-beta" // internal program version
+#define VERSION "v1.10.3-beta" // internal program version
 
 #define WIFI_RECONNECT 30000 // Delay between wifi reconnection tries
 #define MQTT_RECONNECT 10000 // Delay between mqtt reconnection tries
@@ -28,12 +28,39 @@ struct s_cfg_jaro {
   uint16_t remote_mask[16];
 };
 
-struct s_cfg_timer {
-  bool enable;          // Timer enable
-  uint8_t type;         // 0 = fixed time, 2 = sunrise, 3 = sunset
-  char time_value[6];   // fixed Time value (hh:mm)
-  int16_t offset_value; // offset value in minutes for sunrise/sunset
-  uint8_t cmd;          // 0 = up, 1 = down, 2=shade
+// Astro modes for sunrise/sunset timer
+#define ASTRO_REAL        0  // standard sunrise/sunset (zenith 90.833)
+#define ASTRO_CIVIL       1  // civil twilight         (zenith 96)
+#define ASTRO_NAUTIC      2  // nautical twilight      (zenith 102)
+#define ASTRO_ASTRONOMIC  3  // astronomical twilight  (zenith 108)
+#define ASTRO_HORIZON     4  // custom horizon angle
+
+// Timer event: one time trigger (up or down)
+struct s_timer_event {
+  bool    enable;
+  uint8_t type;            // 0=fixed, 1=sunrise, 2=sunset
+  char    time_value[6];   // HH:MM
+  int16_t offset_value;    // minutes offset (-20..+20)
+  uint8_t astro_mode;      // 0=REAL..4=HORIZON
+  int8_t  horizon_value;   // -9..+9 degrees (HORIZON mode only)
+  bool    use_min_time;
+  char    min_time_value[6];
+  bool    use_max_time;
+  char    max_time_value[6];
+  // Weekend override (Sa+So)
+  bool    weekend_enable;
+  uint8_t weekend_type;
+  char    weekend_time_value[6];
+  int16_t weekend_offset_value;
+  uint8_t weekend_astro_mode;
+  int8_t  weekend_horizon_value;
+};
+
+// Per-channel/group timer: up event + down event + weekdays
+struct s_channel_timer {
+  bool          enable;
+  s_timer_event up;
+  s_timer_event down;
   bool monday;
   bool tuesday;
   bool wednesday;
@@ -41,11 +68,23 @@ struct s_cfg_timer {
   bool friday;
   bool saturday;
   bool sunday;
-  uint16_t grp_mask; // Group mask for included channels
+};
+
+// Legacy generic timer (kept for backward compat, unused)
+struct s_cfg_timer {
+  bool enable;
+  uint8_t type;
+  char time_value[6];
+  int16_t offset_value;
+  uint8_t astro_mode;
+  int8_t  horizon_value;
+  uint8_t cmd;
+  bool monday, tuesday, wednesday, thursday, friday, saturday, sunday;
+  uint16_t grp_mask;
   bool use_min_time;
-  char min_time_value[6]; // fixed Time value (hh:mm)
+  char min_time_value[6];
   bool use_max_time;
-  char max_time_value[6]; // fixed Time value (hh:mm)
+  char max_time_value[6];
 };
 
 struct s_cfg_geo {
@@ -132,7 +171,9 @@ struct s_config {
   s_cfg_auth auth;
   s_cfg_log log;
   s_cfg_jaro jaro;
-  s_cfg_timer timer[6];
+  s_cfg_timer    timer[6];      // legacy (unused)
+  s_channel_timer ch_timer[16]; // per-channel timer
+  s_channel_timer grp_timer[6]; // per-group timer
   s_cfg_geo geo;
 };
 

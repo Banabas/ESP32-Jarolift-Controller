@@ -11,7 +11,7 @@
  * V1: Initial version of dewenni.
  * V2: Added min/max times for timers.
  */
-const int CFG_VERSION = 2;
+const int CFG_VERSION = 3;
 
 char filename[24] = {"/config.json"};
 bool setupMode;
@@ -262,6 +262,81 @@ void configInitValue() {
  * @param   none
  * @return  none
  * *******************************************************************/
+
+// Helper: write one s_timer_event into a JsonObject
+static void serializeTimerEvent(JsonObject &obj, const s_timer_event &ev) {
+  obj["enable"]        = ev.enable;
+  obj["type"]          = ev.type;
+  obj["time_value"]    = ev.time_value;
+  obj["offset_value"]  = ev.offset_value;
+  obj["astro_mode"]    = ev.astro_mode;
+  obj["horizon_value"] = ev.horizon_value;
+  obj["use_min_time"]  = ev.use_min_time;
+  obj["min_time"]      = ev.min_time_value;
+  obj["use_max_time"]  = ev.use_max_time;
+  obj["max_time"]      = ev.max_time_value;
+  obj["we_enable"]     = ev.weekend_enable;
+  obj["we_type"]       = ev.weekend_type;
+  obj["we_time"]       = ev.weekend_time_value;
+  obj["we_offset_value"] = ev.weekend_offset_value;
+  obj["we_astro_mode"]   = ev.weekend_astro_mode;
+  obj["we_horizon"]    = ev.weekend_horizon_value;
+}
+
+// Helper: read one s_timer_event from a JsonObject
+static void deserializeTimerEvent(JsonObject obj, s_timer_event &ev) {
+  ev.enable               = obj["enable"]        | false;
+  ev.type                 = obj["type"]          | 0;
+  ev.offset_value         = obj["offset_value"]  | 0;
+  ev.astro_mode           = obj["astro_mode"]    | 0;
+  ev.horizon_value        = obj["horizon_value"] | 0;
+  ev.use_min_time         = obj["use_min_time"]  | false;
+  ev.use_max_time         = obj["use_max_time"]  | false;
+  ev.weekend_enable       = obj["we_enable"]     | false;
+  ev.weekend_type         = obj["we_type"]       | 0;
+  ev.weekend_offset_value = obj["we_offset_value"] | 0;
+  ev.weekend_astro_mode   = obj["we_astro_mode"]   | 0;
+  ev.weekend_horizon_value= obj["we_horizon"]    | 0;
+  const char *tv = obj["time_value"] | "";
+  strncpy(ev.time_value, tv, sizeof(ev.time_value) - 1);
+  const char *mn = obj["min_time"] | "";
+  strncpy(ev.min_time_value, mn, sizeof(ev.min_time_value) - 1);
+  const char *mx = obj["max_time"] | "";
+  strncpy(ev.max_time_value, mx, sizeof(ev.max_time_value) - 1);
+  const char *we = obj["we_time"] | "";
+  strncpy(ev.weekend_time_value, we, sizeof(ev.weekend_time_value) - 1);
+}
+
+// Helper: serialize one s_channel_timer
+static void serializeChannelTimer(JsonObject &obj, const s_channel_timer &ct) {
+  obj["enable"]    = ct.enable;
+  obj["monday"]    = ct.monday;
+  obj["tuesday"]   = ct.tuesday;
+  obj["wednesday"] = ct.wednesday;
+  obj["thursday"]  = ct.thursday;
+  obj["friday"]    = ct.friday;
+  obj["saturday"]  = ct.saturday;
+  obj["sunday"]    = ct.sunday;
+  JsonObject up   = obj["up"].to<JsonObject>();
+  JsonObject down = obj["down"].to<JsonObject>();
+  serializeTimerEvent(up,   ct.up);
+  serializeTimerEvent(down, ct.down);
+}
+
+// Helper: deserialize one s_channel_timer
+static void deserializeChannelTimer(JsonObject obj, s_channel_timer &ct) {
+  ct.enable    = obj["enable"]    | false;
+  ct.monday    = obj["monday"]    | false;
+  ct.tuesday   = obj["tuesday"]   | false;
+  ct.wednesday = obj["wednesday"] | false;
+  ct.thursday  = obj["thursday"]  | false;
+  ct.friday    = obj["friday"]    | false;
+  ct.saturday  = obj["saturday"]  | false;
+  ct.sunday    = obj["sunday"]    | false;
+  if (obj["up"].is<JsonObject>())   deserializeTimerEvent(obj["up"].as<JsonObject>(),   ct.up);
+  if (obj["down"].is<JsonObject>()) deserializeTimerEvent(obj["down"].as<JsonObject>(), ct.down);
+}
+
 void configSaveToFile() {
 
   JsonDocument doc; // reserviert 2048 Bytes für das JSON-Objekt
@@ -414,7 +489,9 @@ void configSaveToFile() {
     timer["enable"] = config.timer[i].enable;
     timer["type"] = config.timer[i].type;
     timer["time_value"] = config.timer[i].time_value;
-    timer["offset_value"] = config.timer[i].offset_value;
+    timer["offset_value"]  = config.timer[i].offset_value;
+    timer["astro_mode"]    = config.timer[i].astro_mode;
+    timer["horizon_value"] = config.timer[i].horizon_value;
     timer["cmd"] = config.timer[i].cmd;
     timer["monday"] = config.timer[i].monday;
     timer["tuesday"] = config.timer[i].tuesday;
@@ -428,6 +505,20 @@ void configSaveToFile() {
     timer["use_max_time"] = config.timer[i].use_max_time;
     timer["min_time_value"] = config.timer[i].min_time_value;
     timer["max_time_value"] = config.timer[i].max_time_value;
+  }
+
+  // per-channel timers (16 shutters)
+  JsonArray ch_timers = doc["ch_timer"].to<JsonArray>();
+  for (int i = 0; i < 16; i++) {
+    JsonObject ct = ch_timers.add<JsonObject>();
+    serializeChannelTimer(ct, config.ch_timer[i]);
+  }
+
+  // per-group timers (6 groups)
+  JsonArray grp_timers = doc["grp_timer"].to<JsonArray>();
+  for (int i = 0; i < 6; i++) {
+    JsonObject gt = grp_timers.add<JsonObject>();
+    serializeChannelTimer(gt, config.grp_timer[i]);
   }
 
   // Delete existing file, otherwise the configuration is appended to the file
@@ -636,6 +727,18 @@ void configLoadFromFile() {
       config.timer[i].use_max_time = timer["use_max_time"];
       EspStrUtil::readJSONstring(config.timer[i].min_time_value, sizeof(config.timer[i].min_time_value), timer["min_time_value"]);
       EspStrUtil::readJSONstring(config.timer[i].max_time_value, sizeof(config.timer[i].max_time_value), timer["max_time_value"]);
+    }
+
+    // per-channel timers
+    JsonArray ch_timers = doc["ch_timer"].as<JsonArray>();
+    for (size_t i = 0; i < ch_timers.size() && i < 16; i++) {
+      deserializeChannelTimer(ch_timers[i].as<JsonObject>(), config.ch_timer[i]);
+    }
+
+    // per-group timers
+    JsonArray grp_timers = doc["grp_timer"].as<JsonArray>();
+    for (size_t i = 0; i < grp_timers.size() && i < 6; i++) {
+      deserializeChannelTimer(grp_timers[i].as<JsonObject>(), config.grp_timer[i]);
     }
   }
 
