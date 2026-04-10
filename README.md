@@ -125,7 +125,7 @@ payload:    50
   Define shutter groups to control several shutters at once.
 
 - **Timer function:**
-  Standalone timer with fixed time, sunrise or sunset as trigger.
+  Each channel and group has its own timer with separate up and down events. Supports fixed time, sunrise/sunset with configurable astro mode (civil, nautical, astronomical, horizon) and optional weekend override.
 
 -----
 
@@ -363,7 +363,19 @@ Groups configured in the settings can be controlled the same way as individual s
 
 ## Timer
 
-Automatic control with fixed time, sunrise or sunset as trigger.
+Each channel and group has its own timer with separate **up** and **down** events and configurable weekdays.
+
+Trigger options:
+
+- **Fixed time** — specify an exact time (HH:MM)
+- **Sunrise / Sunset** — with optional time offset and astro mode:
+  - Real sunrise/sunset
+  - Civil twilight
+  - Nautical twilight
+  - Astronomical twilight
+  - Custom horizon angle
+- **Min/Max time** — limit astro-based triggers to a time window (e.g. open at sunrise, but not before 06:30)
+- **Weekend override** — separate settings for Saturday and Sunday
 
 ![webUI_timer](Doc/webUI_timer.png)
 

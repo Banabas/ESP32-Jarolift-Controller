@@ -125,7 +125,7 @@ Payload:    50
   Gruppen definieren, um mehrere Rolllaeden gleichzeitig zu steuern.
 
 - **Timer-Funktion:**
-  Standalone-Timer mit fester Uhrzeit, Sonnenaufgang oder Sonnenuntergang als Ausloeser.
+  Jeder Kanal und jede Gruppe hat einen eigenen Timer mit separaten Auf- und Ab-Ereignissen. Unterstuetzt feste Uhrzeit, Sonnenaufgang/Sonnenuntergang mit konfigurierbarem Astro-Modus (zivil, nautisch, astronomisch, Horizont) sowie optionalem Wochenend-Override.
 
 -----
 
@@ -360,7 +360,19 @@ Konfigurierte Gruppen koennen genauso bedient werden wie einzelne Rolllaeden.
 
 ## Timer
 
-Automatische Steuerung mit fester Uhrzeit, Sonnenaufgang oder Sonnenuntergang als Ausloeser.
+Jeder Kanal und jede Gruppe hat einen eigenen Timer mit separaten **Auf-** und **Ab-Ereignissen** sowie konfigurierbaren Wochentagen.
+
+Ausloese-Optionen:
+
+- **Feste Uhrzeit** — genaue Zeit angeben (HH:MM)
+- **Sonnenaufgang / Sonnenuntergang** — mit optionalem Zeitversatz und Astro-Modus:
+  - Echter Sonnenaufgang/-untergang
+  - Zivile Daemmerung
+  - Nautische Daemmerung
+  - Astronomische Daemmerung
+  - Benutzerdefinierter Horizont-Winkel
+- **Min-/Max-Zeit** — Astro-basierte Ausloeser auf ein Zeitfenster begrenzen (z.B. oeffnen bei Sonnenaufgang, aber nicht vor 06:30)
+- **Wochenend-Override** — separate Einstellungen fuer Samstag und Sonntag
 
 ![webUI_timer](Doc/webUI_timer.png)
 
