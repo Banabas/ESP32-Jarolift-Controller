@@ -174,7 +174,6 @@ The firmware is available for the following chips:
 - `ESP32-MINI series`
 - `ESP32-S2 series`
 - `ESP32-S3 series`
-- `ESP32-C3 series`
 
 **Not compatible:**
 
