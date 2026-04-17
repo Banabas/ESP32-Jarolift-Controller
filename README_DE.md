@@ -29,12 +29,12 @@
 
 # ESP32-Jarolift-Controller
 
-Steuerung von Jarolift(TM) TDEF 433MHz Funkrolllaeden ueber **ESP32** und **CC1101** Transceiver-Modul im asynchronen Modus.
+Steuerung von Jarolift(TM) TDEF 433MHz Funkrolläden über **ESP32** und **CC1101** Transceiver-Modul im asynchronen Modus.
 
 > [!NOTE]
 > Dies ist ein Fork des hervorragenden Originalprojekts von [dewenni](https://github.com/dewenni/ESP32-Jarolift-Controller).
-> Es erweitert das Original um **zeitbasierte Positionssteuerung** fuer einzelne Rolllaeden.
-> Alle Code-Aenderungen in diesem Fork wurden mit Unterstuetzung von [Claude](https://claude.ai) (Anthropic KI) entwickelt,
+> Es erweitert das Original um **zeitbasierte Positionssteuerung** für einzelne Rolläden.
+> Alle Code-Änderungen in diesem Fork wurden mit Unterstützung von [Claude](https://claude.ai) (Anthropic KI) entwickelt,
 > da der Repository-Inhaber keine Programmierkenntnisse besitzt.
 
 -----
@@ -44,45 +44,45 @@ Steuerung von Jarolift(TM) TDEF 433MHz Funkrolllaeden ueber **ESP32** und **CC11
 ### Prozentbasierte Positionssteuerung
 
 Die wichtigste Neuerung ist die **zeitbasierte Positionssteuerung**.  
-Jeder Rollladen kann nun auf eine beliebige Position zwischen 0% (vollstaendig geoeffnet) und 100% (vollstaendig geschlossen) gefahren werden – direkt ueber die Weboberflaeche, per MQTT oder ueber Home Assistant.
+Jeder Rollladen kann nun auf eine beliebige Position zwischen 0% (vollständig geöffnet) und 100% (vollständig geschlossen) gefahren werden – direkt über die Weboberfläche, per MQTT oder über Home Assistant.
 
-> **Wie es funktioniert:** Da Jarolift-Motoren ihre tatsaechliche Position nicht zurueckmelden, misst der Controller wie lange der Motor von vollstaendig geoeffnet bis vollstaendig geschlossen braucht (und zurueck). Anhand dieser kalibrierten Fahrzeit berechnet er genau, wann der Motor gestoppt werden muss, um jede gewuenschte Position zu erreichen.
+> **Wie es funktioniert:** Da Jarolift-Motoren ihre tatsächliche Position nicht zurückmelden, misst der Controller wie lange der Motor von vollständig geöffnet bis vollständig geschlossen braucht (und zurück). Anhand dieser kalibrierten Fahrzeit berechnet er genau, wann der Motor gestoppt werden muss, um jede gewünschte Position zu erreichen.
 
 **Besonderheiten der Positionssteuerung:**
 
-- **0–100% Positionsschieberegler** in der WebUI fuer jeden Kanal
-- **Separate Kalibrierung** fuer die Abwaerts- (Schliessen) und Aufwaerts-Fahrzeit (Oeffnen) – da Motoren in beiden Richtungen unterschiedlich schnell fahren
-- **Praezises Timing** – der Stoppbefehl wird exakt in dem Millisekunden ausgegeben, in dem der RF-Befehl des Motors gesendet wird
+- **0–100% Positionsschieberegler** in der WebUI für jeden Kanal
+- **Separate Kalibrierung** für die Abwärts- (Schließen) und Aufwärts-Fahrzeit (Öffnen) – da Motoren in beiden Richtungen unterschiedlich schnell fahren
+- **Präzises Timing** – der Stoppbefehl wird exakt in dem Millisekunden ausgegeben, in dem der RF-Befehl des Motors gesendet wird
 - **Positionsspeicher** – die zuletzt bekannte Position wird im Flash-Speicher gespeichert und nach einem Neustart wiederhergestellt
 - **MQTT-Positionssteuerung** – eine Zahl (0–100) als Payload senden, um einen Rollladen auf diese Position zu fahren
-- **Home Assistant Integration** – Rolllaeden erscheinen als Cover-Entitaeten mit Positionsschieberegler; Positionen >= 75% werden als "geschlossen" gemeldet, darunter als "geoeffnet"
+- **Home Assistant Integration** – Rolläden erscheinen als Cover-Entitäten mit Positionsschieberegler; Positionen >= 75% werden als "geschlossen" gemeldet, darunter als "geöffnet"
 
 ![Positionsschieberegler](Doc/webUI_position_slider.png)
 
 ### Kalibrierung
 
 Bevor die Positionssteuerung genutzt werden kann, muss jeder Kanal einmalig kalibriert werden.  
-Die Kalibrierung misst die tatsaechliche Fahrzeit des Motors in beiden Richtungen.
+Die Kalibrierung misst die tatsächliche Fahrzeit des Motors in beiden Richtungen.
 
 **Kalibrierungsschritte (Service-Seite):**
 
-1. Kanal im Dropdown auswaehlen
-2. Rollladen vollstaendig oeffnen (Hoch-Taste druecken bis zum Anschlag)
-3. Auf **"Start Kalibrierung"** klicken – der Rollladen faehrt automatisch nach unten
+1. Kanal im Dropdown auswählen
+2. Rollladen vollständig öffnen (Hoch-Taste drücken bis zum Anschlag)
+3. Auf **"Start Kalibrierung"** klicken – der Rollladen fährt automatisch nach unten
 4. Wenn der Rollladen unten angekommen ist, **"Stopp – Rollladen unten"** klicken
-5. Der Rollladen faehrt nun automatisch wieder hoch
-6. Wenn vollstaendig geoeffnet, **"Stopp – Rollladen oben"** klicken
+5. Der Rollladen fährt nun automatisch wieder hoch
+6. Wenn vollständig geöffnet, **"Stopp – Rollladen oben"** klicken
 7. Beide Fahrzeiten werden automatisch gespeichert
 
 ![Kalibrierung](Doc/webUI_calibration.png)
 
 > [!TIP]
-> Die Kalibrierung muss nur einmal pro Kanal durchgefuehrt werden. Die gemessenen Fahrzeiten bleiben nach einem Neustart erhalten und werden in der Konfigurationsdatei gespeichert.
+> Die Kalibrierung muss nur einmal pro Kanal durchgeführt werden. Die gemessenen Fahrzeiten bleiben nach einem Neustart erhalten und werden in der Konfigurationsdatei gespeichert.
 
 ### Aktualisierte Home Assistant Discovery
 
-- Jeder Rollladen wird als **Cover-Entitaet mit Positionsschieberegler** (0–100%) veroeffentlicht
-- Ein separater **Schatten-Button** wird fuer jeden Rollladen hinzugefuegt
+- Jeder Rollladen wird als **Cover-Entität mit Positionsschieberegler** (0–100%) veröffentlicht
+- Ein separater **Schatten-Button** wird für jeden Rollladen hinzugefügt
 - Statuslogik: Position >= 75% -> `closed`, Position > 0% -> `stopped`, Position = 0% -> `open`
 - Positionsbefehle von HA werden automatisch invertiert (ESP32: 0 = offen, 100 = geschlossen)
 
@@ -91,7 +91,7 @@ Die Kalibrierung misst die tatsaechliche Fahrzeit des Motors in beiden Richtunge
 ```text
 Befehl:     Rollladen auf Position fahren (0-100%)
 Topic:      ../cmd/shutter/1 ... cmd/shutter/16
-Payload:    {0 ... 100}   (Ganzzahl, 0 = vollstaendig offen, 100 = vollstaendig geschlossen)
+Payload:    {0 ... 100}   (Ganzzahl, 0 = vollständig offen, 100 = vollständig geschlossen)
 
 Beispiel:   Rollladen 1 auf 50% fahren
 Topic:      jarolift/cmd/shutter/1
@@ -100,32 +100,32 @@ Payload:    50
 
 > [!IMPORTANT]
 > Der Kanal muss kalibriert sein, bevor Positionsbefehle funktionieren.
-> Positionsbefehle an unkalibrierte Kanaele werden stillschweigend ignoriert.
+> Positionsbefehle an unkalibrierte Kanäle werden stillschweigend ignoriert.
 
 -----
 
 ## Features
 
-- **Webbasierte Benutzeroberflaeche (WebUI):**
-  Eine moderne, mobilfreundliche Schnittstelle fuer einfache Konfiguration und Steuerung.
+- **Webbasierte Benutzeroberfläche (WebUI):**
+  Eine moderne, mobilfreundliche Schnittstelle für einfache Konfiguration und Steuerung.
 
 - **Prozentbasierte Positionssteuerung:** *(neu in diesem Fork)*
   Jeden Rollladen auf eine beliebige Position von 0% bis 100% fahren – per Schieberegler, MQTT oder Home Assistant.
 
-- **MQTT-Unterstuetzung:**
-  Kommunikation und Steuerung ueber MQTT, ein leichtgewichtiges und zuverlaessiges Messaging-Protokoll.
+- **MQTT-Unterstützung:**
+  Kommunikation und Steuerung über MQTT, ein leichtgewichtiges und zuverlässiges Messaging-Protokoll.
 
 - **Home Assistant Integration:**
-  Automatische Geraeteerkennung per MQTT Auto Discovery, inkl. Positionsschieberegler und Schatten-Buttons.
+  Automatische Geräterkennung per MQTT Auto Discovery, inkl. Positionsschieberegler und Schatten-Buttons.
 
-- **Bis zu 16 Rolllaeden:**
-  Steuerung von bis zu 16 Rolllaeden ueber WebUI und MQTT.
+- **Bis zu 16 Rolläden:**
+  Steuerung von bis zu 16 Rolläden über WebUI und MQTT.
 
 - **Bis zu 6 Rollladengruppen:**
-  Gruppen definieren, um mehrere Rolllaeden gleichzeitig zu steuern.
+  Gruppen definieren, um mehrere Rolläden gleichzeitig zu steuern.
 
 - **Timer-Funktion:**
-  Jeder Kanal und jede Gruppe hat einen eigenen Timer mit separaten Auf- und Ab-Ereignissen. Unterstuetzt feste Uhrzeit, Sonnenaufgang/Sonnenuntergang mit konfigurierbarem Astro-Modus (zivil, nautisch, astronomisch, Horizont) sowie optionalem Wochenend-Override.
+  Jeder Kanal und jede Gruppe hat einen eigenen Timer mit separaten Auf- und Ab-Ereignissen. Unterstützt feste Uhrzeit, Sonnenaufgang/Sonnenuntergang mit konfigurierbarem Astro-Modus (zivil, nautisch, astronomisch, Horizont) sowie optionalem Wochenend-Override.
 
 -----
 
@@ -143,10 +143,10 @@ Payload:    50
   - [Setup-Mode](#setup-mode)
   - [Konfiguration](#konfiguration)
   - [Filemanager](#filemanager)
-  - [Anlernen von Rolllaeden](#anlernen-von-rolllaeden)
+  - [Anlernen von Rolläden](#anlernen-von-rolläden)
   - [Migration](#migration)
 - [WebUI](#webui)
-  - [Kanaele](#kanaele)
+  - [Kanäle](#kanäle)
   - [Gruppen](#gruppen)
   - [Timer](#timer)
 - [MQTT](#mqtt)
@@ -165,7 +165,7 @@ Funktionierende Setups von Benutzern dieses Projekts: [funktionierende Setups](h
 
 ## ESP32
 
-Die Firmware ist fuer folgende Chips verfuegbar:
+Die Firmware ist für folgende Chips verfügbar:
 
 **Standard ESP32 (Xtensa 32-bit LX6, 4MB Flash)**
 
@@ -211,11 +211,11 @@ Beispiel mit ESP32-Mini und CC1101
 
 <img style="width: 500px;" src="./Doc/hw_2.png">
 
-Beispiel fuer direkten Austausch mit ESP32-Mini und dem Custom Board von M. Maywald
+Beispiel für direkten Austausch mit ESP32-Mini und dem Custom Board von M. Maywald
 
 ## Optional: Ethernet Modul W5500
 
-Es ist moeglich, ein W5500 Ethernet-Modul anzuschliessen.
+Es ist möglich, ein W5500 Ethernet-Modul anzuschließen.
 
 **Kompatible und getestete Produkte:**
 
@@ -223,9 +223,9 @@ Es ist moeglich, ein W5500 Ethernet-Modul anzuschliessen.
 - `W5500 Lite` HanRun (HR961160C)
 
 > [!IMPORTANT]
-> Das Anschlusskabel sollte so kurz wie moeglich sein (ca. 10 cm).
+> Das Anschlusskabel sollte so kurz wie möglich sein (ca. 10 cm).
 
-Beispiel fuer generischen ESP32-Mini (Standard-SPI wird vom CC1101 verwendet):
+Beispiel für generischen ESP32-Mini (Standard-SPI wird vom CC1101 verwendet):
 
 | Signal | GPIO |
 |--------|------|
@@ -243,15 +243,15 @@ Beispiel fuer generischen ESP32-Mini (Standard-SPI wird vom CC1101 verwendet):
 ## Platform-IO
 
 Die Software wurde mit [Visual Studio Code](https://code.visualstudio.com) und dem [pioarduino-Plugin](https://github.com/pioarduino/pioarduino-vscode-ide) erstellt.  
-Das Projekt von GitHub klonen oder als ZIP herunterladen und in PlatformIO oeffnen.  
+Das Projekt von GitHub klonen oder als ZIP herunterladen und in PlatformIO öffnen.  
 Den `upload_port` in `platformio.ini` anpassen und den Code auf den ESP hochladen.
 
 > [!NOTE]
-> Python muss ebenfalls installiert sein, um das Projekt vollstaendig zu kompilieren.
+> Python muss ebenfalls installiert sein, um das Projekt vollständig zu kompilieren.
 
 ## ESP-Flash-Tool
 
-In den Releases befinden sich vorgefertigte Binaerdateien. Die Datei `ESP32-Jarolift-Controller_vX.X.X_espXX_flash.bin` enthaelt bereits Bootloader, Partitionstabelle und Firmware in einer Datei. Diese an Adresse `0x00` flashen.
+In den Releases befinden sich vorgefertigte Binärdateien. Die Datei `ESP32-Jarolift-Controller_vX.X.X_espXX_flash.bin` enthält bereits Bootloader, Partitionstabelle und Firmware in einer Datei. Diese an Adresse `0x00` flashen.
 
 **Windows:**  
 [espressif-flash-download-tool](https://www.espressif.com/en/support/download/other-tools)
@@ -273,7 +273,7 @@ OTA-Datei aus dem neuesten Release herunterladen und in der WebUI unter **Tools 
 
 ### GitHub OTA-Update
 
-Seit Version 1.4.0 ist ein Update direkt aus der WebUI moeglich. Auf die Versionsanzeige unten links klicken.
+Seit Version 1.4.0 ist ein Update direkt aus der WebUI möglich. Auf die Versionsanzeige unten links klicken.
 
 ![ota-2](Doc/github_ota.gif)
 
@@ -286,18 +286,18 @@ Den `upload_port` in `platformio.ini` auf die IP-Adresse des ESP setzen.
 Der Setup-Mode wird aktiviert, wenn der ESP **5 mal** innerhalb von je 5 Sekunden neu gestartet wird.
 
 Im Setup-Mode erstellt der ESP einen eigenen WLAN-Accesspoint:  
-WLAN: `"ESP32_Jarolift"` – dann WebUI oeffnen unter **http://192.168.4.1**
+WLAN: `"ESP32_Jarolift"` – dann WebUI öffnen unter **<http://192.168.4.1>**
 
 ## Konfiguration
 
 - **WiFi** – WLAN-Zugangsdaten eingeben
 - **Ethernet W5500** – optional Ethernet statt WLAN
 - **Authentifizierung** – Anmeldung mit Benutzername und Passwort aktivieren
-- **NTP-Server** – Zeitsynchronisation fuer die Timer-Funktion
+- **NTP-Server** – Zeitsynchronisation für die Timer-Funktion
 - **MQTT** – MQTT aktivieren und Broker-Einstellungen eingeben
-- **GPIO** – SPI-Pins fuer den CC1101 konfigurieren
+- **GPIO** – SPI-Pins für den CC1101 konfigurieren
 - **Jarolift** – Protokoll-spezifische Einstellungen (Master Keys, Serial, Device Counter)
-- **Shutter** – Jeden der 16 Kanaele benennen und aktivieren
+- **Shutter** – Jeden der 16 Kanäle benennen und aktivieren
 - **Group** – Rollladengruppen definieren
 - **Fernbedienungen** – Vorhandene Jarolift-Fernbedienungen per Seriennummer registrieren
 - **Language** – Deutsch oder Englisch (wirkt sich auf WebUI und MQTT-Nachrichten aus)
@@ -306,32 +306,32 @@ WLAN: `"ESP32_Jarolift"` – dann WebUI oeffnen unter **http://192.168.4.1**
 > Alle Einstellungen werden automatisch gespeichert.
 
 > [!IMPORTANT]
-> Aenderungen an GPIO- oder Jarolift-Einstellungen erfordern einen Neustart.
+> Änderungen an GPIO- oder Jarolift-Einstellungen erfordern einen Neustart.
 
 ![webui-settings](Doc/webUI_settings.png)
 
 ## Filemanager
 
-Der eingebaute Dateimanager ermoeglicht Download und Upload der `config.json` fuer Backup und Wiederherstellung.
+Der eingebaute Dateimanager ermöglicht Download und Upload der `config.json` für Backup und Wiederherstellung.
 
 ![filemanager](Doc/webUI_tools.png)
 
-## Anlernen von Rolllaeden
+## Anlernen von Rolläden
 
 ### Anlernen per Taste am Motor
 
-Jeder TDEF-Motor hat eine Programmiertaste. Diese druecken, dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI druecken.
+Jeder TDEF-Motor hat eine Programmiertaste. Diese drücken, dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI drücken.
 
 > [!TIP]
 > Wenn die Taste nicht erreichbar ist, den Motor kurz stromlos schalten (z.B. Sicherung raus).
 
 ### Anlernen durch Kopieren einer vorhandenen Fernbedienung
 
-AUF- und AB-Taste gleichzeitig auf der vorhandenen Fernbedienung druecken, dann 8x STOP. Motor vibriert zur Bestaetigung. Dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI druecken.
+AUF- und AB-Taste gleichzeitig auf der vorhandenen Fernbedienung drücken, dann 8x STOP. Motor vibriert zur Bestätigung. Dann innerhalb von 5 Sekunden den **Lern-Button** in der WebUI drücken.
 
 ## Migration
 
-Migration von [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT) ist moeglich. Master Keys, Seriennummer und Device Counter aus der alten Konfiguration uebernehmen.
+Migration von [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT) ist möglich. Master Keys, Seriennummer und Device Counter aus der alten Konfiguration übernehmen.
 
 -----
 
@@ -344,16 +344,16 @@ Die WebUI ist responsiv und bietet sowohl Desktop- als auch Mobile-Layout.
 <img style="display:inline;margin-right:50px;width:200px;" src="./Doc/webUI_mobile_1.png">
 <img style="display:inline;margin-right:50px;width:200px;" src="./Doc/webUI_mobile_2.png">
 
-## Kanaele
+## Kanäle
 
 Jeder aktivierte Rollladen kann mit Hoch / Stopp / Runter / Schatten bedient werden.  
-Mit kalibrierter Positionssteuerung steht zusaetzlich ein **Positionsschieberegler (0–100%)** zur Verfuegung.
+Mit kalibrierter Positionssteuerung steht zusätzlich ein **Positionsschieberegler (0–100%)** zur Verfügung.
 
 ![webUI_shutter](Doc/webUI_shutter.png)
 
 ## Gruppen
 
-Konfigurierte Gruppen koennen genauso bedient werden wie einzelne Rolllaeden.
+Konfigurierte Gruppen können genauso bedient werden wie einzelne Rolläden.
 
 ![webUI_groups](Doc/webUI_groups.png)
 
@@ -361,17 +361,17 @@ Konfigurierte Gruppen koennen genauso bedient werden wie einzelne Rolllaeden.
 
 Jeder Kanal und jede Gruppe hat einen eigenen Timer mit separaten **Auf-** und **Ab-Ereignissen** sowie konfigurierbaren Wochentagen.
 
-Ausloese-Optionen:
+Auslöse-Optionen:
 
 - **Feste Uhrzeit** — genaue Zeit angeben (HH:MM)
 - **Sonnenaufgang / Sonnenuntergang** — mit optionalem Zeitversatz und Astro-Modus:
   - Echter Sonnenaufgang/-untergang
-  - Zivile Daemmerung
-  - Nautische Daemmerung
-  - Astronomische Daemmerung
+  - Zivile Dämmerung
+  - Nautische Dämmerung
+  - Astronomische Dämmerung
   - Benutzerdefinierter Horizont-Winkel
-- **Min-/Max-Zeit** — Astro-basierte Ausloeser auf ein Zeitfenster begrenzen (z.B. oeffnen bei Sonnenaufgang, aber nicht vor 06:30)
-- **Wochenend-Override** — separate Einstellungen fuer Samstag und Sonntag
+- **Min-/Max-Zeit** — Astro-basierte Auslöser auf ein Zeitfenster begrenzen (z.B. öffnen bei Sonnenaufgang, aber nicht vor 06:30)
+- **Wochenend-Override** — separate Einstellungen für Samstag und Sonntag
 
 ![webUI_timer](Doc/webUI_timer.png)
 
@@ -381,7 +381,7 @@ Ausloese-Optionen:
 
 ## Kommandos
 
-### Rolllaeden
+### Rolläden
 
 ```text
 Befehl:     Rollladen hoch
@@ -421,7 +421,7 @@ Topic:      ../cmd/group/up  (oder /down, /stop, /shade)
 Payload:    {0b0000000000010101, 0x15, 21}
 ```
 
-`0000000000010101` = Kanaele 1, 3 und 5.
+`0000000000010101` = Kanäle 1, 3 und 5.
 
 ## Status
 
@@ -429,12 +429,12 @@ Payload:    {0b0000000000010101, 0x15, 21}
 Status:     Position (0-100%)
 Topic:      ../status/shutter/1 ... status/shutter/16
 Payload:    {0 ... 100}
-            0   = vollstaendig offen
-            100 = vollstaendig geschlossen
+            0   = vollständig offen
+            100 = vollständig geschlossen
 ```
 
 > [!IMPORTANT]
-> Mit aktiver Positionssteuerung gibt der Status die **geschaetzte Position** auf Basis der kalibrierten Fahrzeit an – keine Rueckmeldung vom Motor selbst. Wird der Rollladen ueber die Original-Fernbedienung bedient, driftet die Positionsschaetzung, bis der Rollladen wieder eine bekannte Endposition (0% oder 100%) anfaehrt.
+> Mit aktiver Positionssteuerung gibt der Status die **geschätzte Position** auf Basis der kalibrierten Fahrzeit an – keine Rückmeldung vom Motor selbst. Wird der Rollladen über die Original-Fernbedienung bedient, driftet die Positionsschätzung, bis der Rollladen wieder eine bekannte Endposition (0% oder 100%) anfährt.
 
 ### Fernbedienungen
 
@@ -443,18 +443,18 @@ Topic:   "../status/remote/<Seriennummer>"
 Payload: {
            "name":  "<Aliasname>",
            "cmd":   "<UP, DOWN, STOP, SHADE>",
-           "chBin": "<Kanal-Binaer>",
+           "chBin": "<Kanal-Binär>",
            "chDec": "<Kanal-Dezimal>"
          }
 ```
 
 ## Home Assistant
 
-MQTT Auto Discovery registriert alle aktivierten Rolllaeden automatisch als **Cover-Entitaeten** in Home Assistant.
+MQTT Auto Discovery registriert alle aktivierten Rolläden automatisch als **Cover-Entitäten** in Home Assistant.
 
-- **Positionsschieberegler** – Rolllaeden auf beliebige Position 0–100% fahren
-- **Schatten-Button** – separater Button pro Rollladen fuer den Schatten-Befehl
-- **Statuslogik** – Position >= 75% wird als geschlossen angezeigt, darunter als geoeffnet
+- **Positionsschieberegler** – Rolläden auf beliebige Position 0–100% fahren
+- **Schatten-Button** – separater Button pro Rollladen für den Schatten-Befehl
+- **Statuslogik** – Position >= 75% wird als geschlossen angezeigt, darunter als geöffnet
 
 <img src="Doc/webUI_ha2.png" alt="Home Assistant Integration" width="75%">
 
@@ -472,7 +472,7 @@ Log-Funktion mit konfigurierbaren Filterstufen, in der WebUI angezeigt.
 
 ## Telnet
 
-Telnet-Schnittstelle fuer Befehle und Diagnose:
+Telnet-Schnittstelle für Befehle und Diagnose:
 
 ```
 telnet 192.168.178.193
@@ -491,13 +491,13 @@ telnet 192.168.178.193
 # Danksagungen
 
 - Originalprojekt: [dewenni/ESP32-Jarolift-Controller](https://github.com/dewenni/ESP32-Jarolift-Controller)
-- Urspruenglicher Steuercode: Steffen Hille (2017) – [Projekt-Homepage](http://www.bastelbudenbuben.de/2017/04/25/protokollanalyse-von-jarolift-tdef-motoren/)
+- Ursprünglicher Steuercode: Steffen Hille (2017) – [Projekt-Homepage](http://www.bastelbudenbuben.de/2017/04/25/protokollanalyse-von-jarolift-tdef-motoren/)
 - Basiert auf Ideen von: [madmartin/Jarolift_MQTT](https://github.com/madmartin/Jarolift_MQTT)
 - Positionssteuerung: entwickelt mit [Claude AI](https://claude.ai) (Anthropic)
 
 -----
 
-> Experimentelle Version. Verwendung auf eigene Gefahr. Nur fuer privaten/schulischen Gebrauch.  
-> Keeloq-Algorithmus ist nur fuer TI-Mikrocontroller lizenziert.  
+> Experimentelle Version. Verwendung auf eigene Gefahr. Nur für privaten/schulischen Gebrauch.  
+> Keeloq-Algorithmus ist nur für TI-Mikrocontroller lizenziert.  
 > Dieses Projekt ist nicht mit dem Hersteller der Jarolift-Komponenten verbunden.  
-> Jarolift ist ein Warenzeichen der Schoeneberger Rolladenfabrik GmbH & Co. KG.
+> Jarolift ist ein Warenzeichen der Schöneberger Rolladenfabrik GmbH & Co. KG.
