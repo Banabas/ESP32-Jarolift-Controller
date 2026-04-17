@@ -378,8 +378,6 @@ Trigger options:
 
 ![webUI_timer](Doc/webUI_timer.png)
 
-<img style="width:444px;" src="./Doc/webUI_bitmask_wiz.png">
-
 -----
 
 # MQTT
@@ -496,6 +494,12 @@ telnet 192.168.178.193
 ```
 
 <img src="./Doc/telnet.png" width="75%">
+
+-----
+
+# System
+
+![webUI_system](Doc/webUI_system.png)
 
 -----
 
