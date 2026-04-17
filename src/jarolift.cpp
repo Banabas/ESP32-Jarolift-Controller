@@ -291,27 +291,27 @@ void processJaroCommands() {
       switch (cmd.service.type) {
       case CMD_LEARN:
         jarolift.cmdLearn(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: CMD_LEARN - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: CMD_LEARN - channel: %i", cmd.service.channel + 1);
         break;
       case CMD_UNLEARN:
         jarolift.cmdUnlearn(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: CMD_UNLEARN - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: CMD_UNLEARN - channel: %i", cmd.service.channel + 1);
         break;
       case CMD_SET_END_POINT_UP:
         jarolift.cmdSetEndPointUp(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: SET_END_POINT_UP - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: SET_END_POINT_UP - channel: %i", cmd.service.channel + 1);
         break;
       case CMD_DEL_END_POINT_UP:
         jarolift.cmdDeleteEndPointUp(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: CMD_DEL_END_POINT_UP - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: CMD_DEL_END_POINT_UP - channel: %i", cmd.service.channel + 1);
         break;
       case CMD_SET_END_POINT_DOWN:
         jarolift.cmdSetEndPointDown(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: SET_END_POINT_DOWN - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: SET_END_POINT_DOWN - channel: %i", cmd.service.channel + 1);
         break;
       case CMD_DEL_END_POINT_DOWN:
         jarolift.cmdDeleteEndPointDown(cmd.service.channel);
-        ESP_LOGI(TAG, "execute service cmd: CMD_DEL_END_POINT_DOWN - channel: %i", cmd.single.channel + 1);
+        ESP_LOGI(TAG, "execute service cmd: CMD_DEL_END_POINT_DOWN - channel: %i", cmd.service.channel + 1);
         break;
       }
     }

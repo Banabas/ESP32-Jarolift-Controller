@@ -170,6 +170,11 @@ static void sendTimerEventFields(JsonDocument &doc, const char *prefix, const s_
   snprintf(id, sizeof(id), "%s_time_value",    prefix); webUI.addJson(doc, id, ev.time_value);
   snprintf(id, sizeof(id), "%s_offset_value",  prefix); webUI.addJson(doc, id, (int)ev.offset_value);
   snprintf(id, sizeof(id), "%s_astro_mode",    prefix); webUI.addJson(doc, id, (int)ev.astro_mode);
+  snprintf(id, sizeof(id), "%s_horizon_value", prefix); webUI.addJson(doc, id, (int)ev.horizon_value);
+  snprintf(id, sizeof(id), "%s_use_min_time",  prefix); webUI.addJson(doc, id, ev.use_min_time);
+  snprintf(id, sizeof(id), "%s_use_max_time",  prefix); webUI.addJson(doc, id, ev.use_max_time);
+  snprintf(id, sizeof(id), "%s_min_time",      prefix); webUI.addJson(doc, id, ev.min_time_value);
+  snprintf(id, sizeof(id), "%s_max_time",      prefix); webUI.addJson(doc, id, ev.max_time_value);
   snprintf(id, sizeof(id), "%s_we_enable",        prefix); webUI.addJson(doc, id, ev.weekend_enable);
   snprintf(id, sizeof(id), "%s_we_type",          prefix); webUI.addJson(doc, id, (int)ev.weekend_type);
   snprintf(id, sizeof(id), "%s_we_time_value",    prefix); webUI.addJson(doc, id, ev.weekend_time_value);
